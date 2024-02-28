@@ -1,0 +1,73 @@
+*{
+  /* margin: 0 auto    ; 
+  padding: 0 auto;
+   box-sizing: border-box !important; */
+  font-family: 'Nunito', sans-serif;
+}
+
+
+
+/*  restrict auto margin and padding in some wanted pages/elements  */
+.table-specific-container table,
+.table-specific-container tr,
+.table-specific-container th,
+.table-specific-container td {
+  padding: 0 !important;
+}
+
+
+/* curser pointer for icons  */
+.cursor-pointer{
+  cursor: pointer;
+}
+
+/* disable arrow in number inputs */
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+
+
+@media print{
+  
+    .printmodel{
+        font-size: 8px !important;
+        margin: 0 auto !important 
+       
+    }
+    body {
+        -webkit-print-color-adjust: exact; /* For Chrome and Safari */
+        color-adjust: exact; /* For Firefox */
+      }
+      .printbtn{
+        display: none;
+      }
+      .navbar{
+        display: none !important;
+      }
+
+      /* for po printing heaer */
+      .po-print-table thead:first-of-type {
+        /* Styles for the first header (show on the first page) */
+        display: table-header-group;
+      }
+    
+      .po-print-table thead:not(:first-of-type) {
+        /* Styles for headers other than the first (hide on subsequent pages) */
+        display: none;
+      }
+}
+@media (max-width: 767px) {
+  .printmodel {
+     font-size: 10px;/* Lighter weight for mobile */
+  }
+}

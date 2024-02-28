@@ -1,0 +1,38 @@
+.floating-label-input {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.floating-label-input label {
+  position: absolute;
+  font-size: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 25px;
+  pointer-events: none;
+  transition: 0.3s ease all;
+  color: #777; /* Set the initial label color */
+  background-color: white; /* Set the initial background color to match the input */
+  padding: 0 10px;
+  padding-right: 30px;
+  box-sizing: border-box;
+}
+
+.floating-label-input input {
+  width: calc(100% - 20px); /* Adjust width to account for padding on both sides */
+  padding: 15px ;
+  
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  outline: none;
+  margin-left: 10px; /* Adjust margin to match label's left position */
+}
+
+.floating-label-input.active label,
+.floating-label-input input:focus + label {
+  top: 0;
+  font-size: 18px;
+  color: #285c93; /* Change this color as per your design */
+  background-color:white; /* Set the background color to match the input */
+  padding: 0 5px; /* Adjust padding to maintain space for the label */
+}
