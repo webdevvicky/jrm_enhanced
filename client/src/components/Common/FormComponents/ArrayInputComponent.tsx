@@ -10,6 +10,8 @@ const ArrayInput = <T extends {}>({
   multiplyFields,
   isNumberFields,
   notRequired,
+  watch,
+  onTotalChange,
 }: ArrayInputProps<T>) => {
   const {
     fields: arrayFields,
@@ -31,18 +33,17 @@ const ArrayInput = <T extends {}>({
     };
   }
 
-  const calculateTotal = (field: Record<string, any>) => {
+  // Use watch to get real-time changes
+
+  // @ts-ignore
+  const watchedFields = watch<Path<T>>(name, arrayFields);
+
+  const calculateTotal = (fieldIndex: number) => {
     if (!multiplyFields) return 0;
-
     const [field1, field2] = multiplyFields;
-    const value1 = field[field1] || 0;
-    const value2 = field[field2] || 0;
+    const value1 = watchedFields[fieldIndex]?.[field1] || 0;
+    const value2 = watchedFields[fieldIndex]?.[field2] || 0;
     return value1 * value2;
-  };
-
-  validationRules.pattern = {
-    value: /^[+-]?\d*\.?\d*$/,
-    message: "This field allows only numbers",
   };
 
   return (
@@ -51,13 +52,10 @@ const ArrayInput = <T extends {}>({
         <thead className=" text-center">
           <tr>
             <th>S.No</th>
-
             {fields.map((field) => (
               <th key={field.name}>{field.label || field.name}</th>
             ))}
-
             {multiplyFields && <th>Total</th>}
-
             <th>Action</th>
           </tr>
         </thead>
@@ -67,24 +65,22 @@ const ArrayInput = <T extends {}>({
             <tr key={field.id}>
               <td className="text-center">{index + 1}</td>
               {fields.map((arrayField) => (
-                <>
-                  <td key={arrayField.name}>
-                    <input
-                      style={{ width: "100%" }}
-                      {...register(
-                        `${name}.${index}.${arrayField.name}` as Path<T>,
-                        {
-                          ...validationRules,
-                          pattern: isNumberFields?.[arrayField.name]
-                            ? /^[+-]?\d*\.?\d*$/
-                            : undefined,
-                        }
-                      )}
-                    />
-                  </td>
-                </>
+                <td key={arrayField.name}>
+                  <input
+                    style={{ width: "100%" }}
+                    {...register(
+                      `${name}.${index}.${arrayField.name}` as Path<T>,
+                      {
+                        ...validationRules,
+                        pattern: isNumberFields?.[arrayField.name]
+                          ? /^[+-]?\d*\.?\d*$/
+                          : undefined,
+                      }
+                    )}
+                  />
+                </td>
               ))}
-              {multiplyFields && <td>{calculateTotal(field)}</td>}
+              {multiplyFields && <td>{calculateTotal(index).toFixed(2)}</td>}
               <td>
                 <div className="d-flex align-items-center">
                   <PlusSquare
@@ -126,12 +122,14 @@ const ArrayInput = <T extends {}>({
               </td>
               <td colSpan={2}>
                 {(() => {
-                  const totalSum = arrayFields.reduce((sum, field) => {
-                    const total = calculateTotal(field);
+                  const totalSum = arrayFields.reduce((sum, _, index) => {
+                    const total = calculateTotal(index);
+                    
                     return sum + total;
                   }, 0);
 
                   const roundedTotal = totalSum.toFixed(2);
+                  onTotalChange && onTotalChange(roundedTotal);
 
                   return roundedTotal;
                 })()}

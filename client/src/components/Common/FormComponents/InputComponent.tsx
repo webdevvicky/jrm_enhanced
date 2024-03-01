@@ -47,7 +47,7 @@ const InputComponent = <T extends FieldValues>({
           placeholder={`Enter ${label}` || placeholder}
           {...register(name, {
             ...validationRules,
-            value: defaultValue,
+           
           })}
         />
 

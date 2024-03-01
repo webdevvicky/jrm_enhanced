@@ -4,11 +4,12 @@ import authService from "../../services/authService";
 import { AxiosResponse } from "axios";
 import InputComponent from "../Common/FormComponents/InputComponent";
 import SubmitComponent from "../Common/FormComponents/SumitComponent";
+import { handleApiError } from "../../utils/apiUtils";
 
 interface LoginProps {
   email: string;
   password: string;
-  role: string;
+  userType: string;
 }
 
 const Login = () => {
@@ -29,14 +30,14 @@ const Login = () => {
         navigate("/");
       })
       .catch((err: any) => {
-        window.alert(err.response.data.error);
+        handleApiError(err);
       });
   };
   return (
-    <div className=" d-flex  justify-content-center  align-items-center vh-100">
+    <div className=" d-flex  justify-content-center  align-items-center vh-100 bg-body-tertiary ">
       <div className="container col-md-6 border rounded-2 shadow-lg py-4 ">
         <div className=" text-center ">
-          <h1>login</h1>
+          <h1>Login </h1>
         </div>
         <form onSubmit={handleSubmit(formsubmit)}>
           <InputComponent
@@ -62,13 +63,12 @@ const Login = () => {
             <select
               id="select"
               className=" form-select  form-control py-3 "
-              {...register("role")}
+              {...register("userType")}
               required
             >
               <option value="">select your role</option>
-              <option value="user">User</option>
-              <option value="employee">Employee</option>
-              <option value="admin">Admin</option>
+              <option value="customer">User</option>
+              <option value="user">Office Login</option>
             </select>
           </div>
           <SubmitComponent btnlable="Login" />

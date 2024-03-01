@@ -19,7 +19,6 @@ interface NewQuoteProps{
     isConstruction:boolean,
     isRevised:boolean
     items:QuoteItemProps[]
-   
 }
 
 interface QuoteModelProps{

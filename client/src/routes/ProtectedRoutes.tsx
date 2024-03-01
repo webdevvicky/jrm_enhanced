@@ -69,14 +69,7 @@ const ProtectedRoutes = () => {
   ];
   const adminnav: NavItem[] = [
     { to: "/", label: "Home" },
-    {
-      to: "projects",
-      subcategories: [
-        { to: "/projects/new", label: "New" },
-        { to: "/projects/ongoing", label: "Ongoing" },
-        { to: "/projects/completed", label: "completed" },
-      ],
-    },
+  
     {
       to: "Quotes",
       subcategories: [

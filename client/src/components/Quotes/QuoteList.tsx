@@ -59,8 +59,6 @@ const QuoteList: React.FC = () => {
       setFilteredQuotes(filtered);
     }
   }, [filterType, quotes]);
-  console.log("fil", filteredQuotes);
-  console.log("ser", quotes);
   return (
     <div className=" container ">
       <div className="row pb-3">

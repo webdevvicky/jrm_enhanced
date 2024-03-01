@@ -17,9 +17,7 @@ const SelectComponent = <T extends FieldValues>({
     <div className="container">
       <div className=" mb-3 ">
         {label && (
-          <label className="form-label pb-2 fw-bold text-capitalize">
-            {label}
-          </label>
+          <label className="form-label  fw-bold text-capitalize">{label}</label>
         )}
         <select
           {...register(name, { required: !notRequired })}
@@ -27,9 +25,7 @@ const SelectComponent = <T extends FieldValues>({
           value={selected || defaultValue}
           onChange={(event) => setSelected(event.target.value || "")}
         >
-          <option selected defaultChecked>
-            {emptyLabel || "select an option"}
-          </option>
+          <option value={ ""}>{emptyLabel || "select an option"}</option>
           {options.map((option) => (
             <option value={option.value} key={option.value}>
               {option.option}

@@ -9,6 +9,8 @@ const invoiceRoutes = require('../invoiceRoutes')
 const poRoutes = require('../poRoutes')
 const contractorRoutes = require('../contractorRoutes')
 const vendorRoutes = require('../vendorRoutes')
+const EnquiryRoutes = require('../EnquiryRoutes')
+const EnquiryQuoteRoutes = require('../enquiryQuoteRoutes')
 
 
 router.use('/user',userRoutes)
@@ -19,6 +21,8 @@ router.use('/invoice',invoiceRoutes)
 router.use('/purchase',poRoutes)
 router.use('/contractor',contractorRoutes)
 router.use('/vendor',vendorRoutes)
+router.use('/enquiry',EnquiryRoutes)
+router.use('/enquiry/api/quote',EnquiryQuoteRoutes)
 
 
 

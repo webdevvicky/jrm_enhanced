@@ -1,4 +1,4 @@
- import { Path, UseFormRegister, FieldValues, ArrayPath, Control } from "react-hook-form";
+ import { Path, UseFormRegister, FieldValues, ArrayPath, Control, UseFormWatch } from "react-hook-form";
 
  export interface InputProps<T extends FieldValues> {
   type?: string;
@@ -25,6 +25,8 @@
   multiplyFields?: [string, string];
   error?: any;
   notRequired?: boolean;
+  onTotalChange?:(roundedTotal:string)=>void
+  watch: UseFormWatch<T>;
   isNumberFields?: Record<string, boolean>;
 }
 
@@ -45,15 +47,15 @@ export interface ValidationRules {
   isNumber?: boolean;
 }
 
-type FieldNames<T extends Record<string, any>> = NestedFieldNames<T, keyof T>;
-type NestedFieldNames<T extends Record<string, any>, K extends keyof T> =
-  T[K] extends object
-    ? `<span class="math-inline">\{K\}\.</span>{NestedFieldNames<T[K], keyof T[K]>}`
-    : K;
+// type FieldNames<T extends Record<string, any>> = NestedFieldNames<T, keyof T>;
+// type NestedFieldNames<T extends Record<string, any>, K extends keyof T> =
+//   T[K] extends object
+//     ? `<span class="math-inline">\{K\}\.</span>{NestedFieldNames<T[K], keyof T[K]>}`
+//     : K;
 
 export interface FieldData<T extends Record<string, any>> {
   label: string;
-  name:FieldNames<T>
+  name:ArrayPath<T>
   type?: string;
   defaultValue?: string;
   validation?: ValidationRules;
@@ -92,7 +94,7 @@ export interface FloatingInputProps<T extends FieldValues> {
 
   
   export  interface FormSelectProps {
-      value: string;
+      value: any;
       option: string;
     }
     
@@ -104,7 +106,7 @@ export interface FloatingInputProps<T extends FieldValues> {
     label?: string; 
     emptyLabel?:string
     error: any;
-    defaultValue?:string
+    defaultValue?:any
     notRequired?:boolean
   }
   

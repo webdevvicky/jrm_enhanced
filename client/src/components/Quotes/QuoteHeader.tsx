@@ -6,7 +6,7 @@ interface QuoteHeaderProps {
 
 const QuoteHeader = ({ quoteType }: QuoteHeaderProps) => {
   return (
-    <div className=" container">
+    <div className=" container ">
       <div
         className="row  text-white py-2 d-flex  justify-content-center align-items-center "
         style={{ backgroundColor: "#151e59" }}
@@ -17,7 +17,7 @@ const QuoteHeader = ({ quoteType }: QuoteHeaderProps) => {
         >
           <img src={logo} alt="jrm " className=" img-fluid " />
         </div>
-        <div className="col-6 align-content-center  align-items-center  d-flex ">
+        <div className="col-6 align-content-center  align-items-center  d-flex">
           <h6>{quoteType} Quote</h6>
         </div>
         <div className="col-4 ps-3">

@@ -1,3 +1,3 @@
 import apidata from "./HTTP-Service"
 
-export default  apidata("/auth")
+export default  apidata("/login")

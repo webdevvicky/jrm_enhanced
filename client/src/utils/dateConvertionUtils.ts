@@ -14,6 +14,24 @@ export const convertMongoDBDate = (mongoDBDateString: Date | undefined): Date | 
 
 
 
+// utils.ts
+
+export const convertMongoDate = (utcDate: string): string => {
+  const options: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
+    timeZone: 'Asia/Kolkata', // Set the desired time zone
+  };
+
+  const indianDate: string = new Date(utcDate).toLocaleString('en-IN', options);
+  return indianDate;
+};
+
+
 export const dateConvert = (mongoDBDateString: string | undefined): string | undefined => {
     if (mongoDBDateString) {
       return mongoDBDateString.toString().split('T')[0];

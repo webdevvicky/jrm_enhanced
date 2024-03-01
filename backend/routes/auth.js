@@ -17,6 +17,14 @@ router.post('/', async (req, res) => {
     return res.status(400).json({ error: 'Invalid userType' });
   }
 
+ 
+    const existingUser =  await userModel.findOne({email})
+    
+    if(!existingUser){
+      return  res.status(404).json({ error: 'user not found' });
+    }
+ 
+
   const token = await authUtils.login(userModel, email, password);
 
   if (token) {
