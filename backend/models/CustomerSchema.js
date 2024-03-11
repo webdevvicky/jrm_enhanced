@@ -18,7 +18,6 @@ const customerSchema = new mongoose.Schema({
   projectLocation: { type: String, required: true },
   fileNumber: { type: Number, required: true },
   pinCode: { type: String, required: true },
-  alternateMobile: { type: Number },
   alternateEmail: { type: String },
   created:{
     type: mongoose.Schema.Types.ObjectId,

@@ -17,7 +17,7 @@ interface NewQuoteProps{
     isAdditional:boolean,
     isInterior:boolean,
     isConstruction:boolean,
-    isRevised:boolean
+    isRevised:boolean,
     items:QuoteItemProps[]
 }
 
@@ -25,6 +25,7 @@ interface QuoteModelProps{
     _id: string;
     date: string; 
     isApproved: boolean;
+    isRejected:boolean
     isAdditional:boolean;
     isConstruction:boolean;
     isInterior:boolean;

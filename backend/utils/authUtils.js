@@ -1,26 +1,36 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const  secretKey  = require('./config'); // Replace with your secret key or store it securely
+
 
 const generateToken = (user) => {
+
   const payload = {
     id: user._id,
     role: user.role,
+    allowedRoutes:user.allowedRoutes 
   };
 
   const options = {
-    expiresIn: '1d', // You can adjust the expiration time as needed
+    expiresIn: '1d', 
   };
 
-  return jwt.sign(payload, secretKey, options);
+  return jwt.sign(payload, process.env.TOKEN_SECRET, options);
 };
 
-const verifyToken = (token) => {
+const verifyToken = (authorizationHeader) => {
+  // Check if the authorization header is present and starts with 'Bearer '
+  if (!authorizationHeader || !authorizationHeader.startsWith('Bearer ')) {
+    return null; // Invalid token format
+  }
+
   try {
-    const decoded = jwt.verify(token, secretKey);
+    // Extract token without 'Bearer' prefix
+    const tokenWithoutBearer = authorizationHeader.split(' ')[1];
+    
+    const decoded = jwt.verify(tokenWithoutBearer, process.env.TOKEN_SECRET);
     return decoded;
   } catch (error) {
-    return null;
+    return null; // Invalid or expired token
   }
 };
 

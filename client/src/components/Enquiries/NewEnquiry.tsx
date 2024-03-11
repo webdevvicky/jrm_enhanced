@@ -46,14 +46,12 @@ const NewEnquiry = () => {
   }, [id, reset]);
 
   const handleSubmitEnquiry = (data: NewEnquiryProps) => {
-    console.log(id);
-
     if (id) {
       const updatedData = { _id: id || "", ...data };
       enquiryServices
         .update(updatedData)
         .then(() => {
-          navigate("/marketting/list");
+          navigate("/marketting/enquiry/list");
         })
         .catch((err: any) => handleApiError(err));
     } else {
@@ -61,7 +59,7 @@ const NewEnquiry = () => {
       enquiryServices
         .create(data)
         .then(() => {
-          navigate("/marketting/list");
+          navigate("/marketting/enquiry/list");
         })
         .catch((err: any) => {
           handleApiError(err);
@@ -206,6 +204,19 @@ const NewEnquiry = () => {
               error={errors.initialRemark}
             />
           </div>
+          {id && (
+            <div className="col-sm-6 col-md-4 col-lg-3">
+              <SelectComponent
+                options={booleanOptions}
+                name={"movedToBook"}
+                register={register}
+                error={errors.movedToBook}
+                label="Move to Booking"
+                defaultValue={false}
+                notRequired
+              />
+            </div>
+          )}
         </div>
 
         <div className="row">

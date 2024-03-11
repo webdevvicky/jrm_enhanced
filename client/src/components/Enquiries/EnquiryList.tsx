@@ -138,7 +138,7 @@ const EnquiriesList = () => {
               <tr key={index} className=" text-center ">
                 <td>{index + 1}</td>
                 <td>{enquiry.priority}</td>
-                <td>{enquiry.name}</td>
+                <td className=" text-capitalize  ">{enquiry.name}</td>
                 <td>{enquiry.location}</td>
                 <td>{enquiry.mobileNumber}</td>
                 <td>{enquiry.email}</td>
@@ -190,7 +190,7 @@ const EnquiriesList = () => {
                   </Link>
                 </td>
                 <td>
-                  <Link to={`/marketting/edit/${enquiry._id}`}>
+                  <Link to={`/marketting/enquiry/edit/${enquiry._id}`}>
                     <PencilFill color="green" />
                   </Link>
                 </td>

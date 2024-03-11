@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
-const remarksSchema = new mongoose.Schema({
-  date: { type: Date, default:Date.now  },
-  comment: { type: String, required: true },
-});
+      const remarksSchema = new mongoose.Schema({
+        date: { type: Date, default:Date.now  },
+        comment: { type: String, required: true },
+      });
 
 const enquirySchema = new mongoose.Schema({
   priority: { type: Number, required: true },
@@ -19,6 +19,13 @@ const enquirySchema = new mongoose.Schema({
   source: { type: String, required: true },
   initialRemark:{type:String,required:true},
   remarks: [{ type: remarksSchema }],
+  movedToBook:{type:Boolean,default:false},
+  isBooked:{type:Boolean,default:false},
+  createdBy:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref:'User'
+  },
+
 },{timestamps:true});
 
 const Enquiry = mongoose.model('Enquiry', enquirySchema);

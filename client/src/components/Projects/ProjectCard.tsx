@@ -4,6 +4,8 @@ import { AxiosResponse } from "axios";
 import NewProject from "./NewProject";
 import Loader from "../Common/Loader/Loader";
 import { handleApiError } from "../../utils/apiUtils";
+import { PlusCircleDotted } from "react-bootstrap-icons";
+import { Link } from "react-router-dom";
 
 const ProjectCard: React.FC = () => {
   const [projectData, setProjectData] = useState<ProjectCardProps[]>([]);
@@ -27,6 +29,11 @@ const ProjectCard: React.FC = () => {
   console.log(selectedId);
   return (
     <div>
+      <div>
+        <Link to={"new"}>
+          <PlusCircleDotted size={30} />
+        </Link>
+      </div>
       {projectData.length < 1 && <Loader />}
       <div className="row ">
         {!isEdit &&

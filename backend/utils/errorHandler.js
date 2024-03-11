@@ -21,7 +21,7 @@ const handleMongoDBError = (res, error) => {
 };
 
 const errorHandler = (res, error) => {
-  console.error(error);
+  
 
   if (error.name === 'ValidationError') {
     return handleValidationError(res, error);

@@ -1,6 +1,6 @@
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import quoteService from "../../services/quote/quoteService";
+
 import { AxiosResponse } from "axios";
 import { ToWords } from "to-words";
 import { format } from "date-fns";

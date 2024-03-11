@@ -13,13 +13,20 @@ interface IncrementDetail {
     idNumber:String
   }
   interface AccountDetails{
-    AccountNumber:number,
+    accountNumber:number,
     ifsc:string,
     gpay:number
   }
+
+  interface PersonalDetails{
+    fatherName?: string;
+    fatherPhoneNumber?: number;
+    motherName:string,
+    motherPhoneNumber:number;
+  }
   
   interface Employee {
-    _id:string
+    _id:string;
     name: string;
     email: string;
     mobileNumber: number;
@@ -30,17 +37,16 @@ interface IncrementDetail {
     active: boolean;
     dateOfBirth?: string;
     bloodGroup?: string;
-    fatherName?: string;
-    fatherPhoneNumber?: number;
-    motherName:string,
-    motherPhoneNumber:number
+    personalDetails:PersonalDetails;
     address?: string;
     salaryDetails?: SalaryDetails;
     accountDeatails:AccountDetails;
-    idProofDetails:IdProofDeatils
-    role: 'admin' | 'generalmanager' | 'projectmanager' | 'architech' | 'coordinater' | 'siteengineer' | 'marketting';
+    idProofDetails:IdProofDeatils;
+    selectedOptions: { value: string; label: string }[];
+    allowedRoutes:string[];
+    role: 'admin' | 'generalmanager' | 'projectmanager' |'leadarchitech'| 'architech' | 'coordinater' | 'siteengineer' | 'marketting'|'others';
     designation?: string;
-    department?:string
+    department?:string;
     profilePicture?: string;
     password?: string;
   }

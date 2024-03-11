@@ -11,6 +11,7 @@ interface NewEnquiryProps{
    source:string,
    initialRemark:string
    remarks?:Remarks[]
+   movedToBook:boolean
     }
 
 interface Remarks{
@@ -19,7 +20,7 @@ interface Remarks{
     }
 
     interface EnquiryProps extends NewEnquiryProps{
-        createdAt:Date,
+        createdAt:string,
         _id:string,
         date:Date,
         fileNumber:number
@@ -50,9 +51,19 @@ interface Remarks{
         rev:number,
         fileNumber:number
         isApproved:boolean,
-        isCorrection:boolean
+        isRejected:boolean
         items: QuoteItemProps[]
         totalValue: number;
         enquiryId:EnquiryProps
     }
    
+
+    interface BookingMoved{
+        _id:string
+        name:string,
+        location:string,
+        fileNumber:number,
+        mobileNumber:number,
+        email:string
+
+    }

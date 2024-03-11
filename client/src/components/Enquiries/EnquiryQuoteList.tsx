@@ -10,9 +10,13 @@ import enquiryQuoteServices from "../../services/enquiry/enquiryQuoteServices";
 import { handleApiError } from "../../utils/apiUtils";
 
 const EnquiryQuoteList = () => {
+  // fetch id from enquiry list
+
   const { id } = useParams();
   const { state } = useLocation();
   const [quotes, setQuotes] = useState<EnquiryQuoteModelProps[]>([]);
+
+  const lastQuoteId = quotes.length > 0 ? quotes[quotes.length - 1]._id : null;
 
   const handleDelete = (_id: string) => {
     const allQuotes = quotes;
@@ -49,10 +53,10 @@ const EnquiryQuoteList = () => {
     const allQuotes = quotes;
     setQuotes((prevQuotes) =>
       prevQuotes.map((quote) =>
-        quote._id === _id ? { ...quote, isCorrection: true } : quote
+        quote._id === _id ? { ...quote, isRejected: true } : quote
       )
     );
-    const updatedData = { _id: _id, isCorrection: true };
+    const updatedData = { _id: _id, isRejected: true };
     enquiryQuoteServices
       .update(updatedData)
       .then((res: AxiosResponse) => {
@@ -74,10 +78,9 @@ const EnquiryQuoteList = () => {
     <div className=" container ">
       <div className="row">
         <div className="col-md-6">
-          {" "}
           <Link
             to={`/marketting/quote/form/${id}`}
-            state={{ name: state.name }}
+            state={{ name: state.name, lastQuoteId: lastQuoteId }}
           >
             <PlusCircleDotted size={30} />
           </Link>
@@ -115,7 +118,7 @@ const EnquiryQuoteList = () => {
                 <td>
                   <RejectButton
                     isApproved={quote.isApproved}
-                    isRejected={quote.isCorrection}
+                    isRejected={quote.isRejected}
                     onClick={() => handleReject(quote._id)}
                   />
                 </td>

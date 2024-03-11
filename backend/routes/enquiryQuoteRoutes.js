@@ -136,15 +136,11 @@ const EnquiryQuotation = require('../models/EnquiryQuoteSchema')
   
   // Update
   router.patch('/:id', async (req, res) => {
-    // const updates = Object.keys(req.body);
-    // const allowedUpdates = ['isApproved', 'isCorrection', 'items']; // Add more as needed
-    // const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
-  
-    // if (!isValidOperation) {
-    //   return res.status(400).send({ error: 'Invalid updates!' });
-    // }
   
     try {
+
+      const edited = !!req.body.items; // Use the double negation to convert to a boolean
+      req.body.isRejected = !edited;
       const enquiryQuotation = await EnquiryQuotation.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
       if (!enquiryQuotation) {
         return res.status(404).send();

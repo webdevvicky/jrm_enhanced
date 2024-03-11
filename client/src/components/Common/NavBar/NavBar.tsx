@@ -49,7 +49,7 @@ const NavBar = ({ navItems }: NavBarProps) => {
           <img
             src={jrmlogo}
             alt="jrm"
-            className="img-fluid img-thumbnail"
+            className=" img-fluid  img-thumbnail "
             style={{ mixBlendMode: "multiply" }}
           />
         </div>
@@ -69,6 +69,11 @@ const NavBar = ({ navItems }: NavBarProps) => {
           id="navbarSupportedContent"
         >
           <ul className="navbar-nav justify-content-end">
+            <li className="nav-item">
+              <Link to="/" className="nav-link fw-bold">
+                Home
+              </Link>
+            </li>
             {navItems.map((item, index) => (
               <li className="nav-item" key={index}>
                 {item.subcategories ? (

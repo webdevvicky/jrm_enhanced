@@ -26,7 +26,9 @@ const Login = () => {
       .create(data)
       .then((res: AxiosResponse) => {
         const token = res.data.token;
+
         localStorage.setItem("token", token);
+
         navigate("/");
       })
       .catch((err: any) => {

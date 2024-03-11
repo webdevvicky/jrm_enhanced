@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Enquiry = require('../models/EnquirySchema');
+const errorHandler = require('../utils/errorHandler')
 
 // Create a new enquiry
 router.post('/', async (req, res) => {
@@ -16,12 +17,36 @@ router.post('/', async (req, res) => {
 // Get all enquiries
 router.get('/', async (req, res) => {
   try {
-    const enquiries = await Enquiry.find();
-    res.json(enquiries);
+    const enquiries = await Enquiry.find({ priority: { $ne: 5 } }); // Exclude priority 5
+   if(!enquiries){
+    return res.send("No Enquiries Found")
+   }
+    const reversedEnquiry = enquiries.reverse();
+    res.json(reversedEnquiry);
   } catch (error) {
     res.status(500).json({ message: 'Internal Server Error', error: error.message });
   }
 });
+
+
+// get moved to booking enquiries 
+
+router.get('/booking',async (req,res)=>{
+
+try{
+
+  const movedBokking = await Enquiry.find({movedToBook:true,isBooked:false}).select('name location fileNumber mobileNumber email')
+  if(!movedBokking || movedBokking.length <=0){
+    res.status(404).send("No Booking Found")
+  }
+
+  res.status(200).send(movedBokking)
+
+}catch(error){
+  errorHandler(res,error)
+}
+})
+
 
 // Get enquiry by ID
 router.get('/:id', async (req, res) => {
@@ -77,17 +102,17 @@ router.patch('/remarks/new/:id', async (req, res) => {
 });
 
 // Delete an enquiry by ID
-router.delete('/:id', async (req, res) => {
-  try {
-    const deletedEnquiry = await Enquiry.findByIdAndDelete(req.params.id);
-    if (!deletedEnquiry) {
-      return res.status(404).json({ error: 'Enquiry not found' });
-    }
-    res.json({ message: 'Enquiry deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ message: 'Internal Server Error', error: error.message });
-  }
-});
+// router.delete('/:id', async (req, res) => {
+//   try {
+//     const deletedEnquiry = await Enquiry.findByIdAndDelete(req.params.id);
+//     if (!deletedEnquiry) {
+//       return res.status(404).json({ error: 'Enquiry not found' });
+//     }
+//     res.json({ message: 'Enquiry deleted successfully' });
+//   } catch (error) {
+//     res.status(500).json({ message: 'Internal Server Error', error: error.message });
+//   }
+// });
 
 
 

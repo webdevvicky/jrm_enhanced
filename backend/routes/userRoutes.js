@@ -30,7 +30,7 @@ router.post('/', async (req, res) => {
   // Get all users
 router.get('/', async (req, res) => {
     try {
-      const users = await User.find();
+      const users = await User.find().select('name role designation')
   
       if (!users || users.length === 0) {
         return res.status(404).json({ error: 'No users found' });
@@ -45,10 +45,9 @@ router.get('/', async (req, res) => {
 
 // Get user by ID
 router.get('/:id', async (req, res) => {
-    const userId = req.params.id;
-  
+ 
     try {
-      const user = await User.findById(userId);
+      const user = await User.findById(req.params.id);
   
       if (!user) {
         return res.status(404).json({ error: 'User not found' });

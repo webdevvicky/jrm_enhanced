@@ -1,7 +1,4 @@
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
-import MyJwtPayload from "../interfaces/MyJwtPayload";
-
 const apiUrl = import.meta.env.VITE_API_URL;
 const axiosInstance = axios.create({
   baseURL: apiUrl,
@@ -16,9 +13,9 @@ axiosInstance.interceptors.request.use(
 
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
-      const decoded = token ? (jwtDecode(token) as MyJwtPayload) : null;
-      config.headers['userid'] = decoded?.userId;
-      config.headers['role'] = decoded?.role;
+      // const decoded = token ? (jwtDecode(token) as MyJwtPayload) : null;
+      // config.headers['id'] = decoded?.id;
+      // config.headers['role'] = decoded?.role;
 
     }
     return config;

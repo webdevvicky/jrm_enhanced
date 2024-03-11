@@ -13,7 +13,7 @@ const InputComponent = <T extends FieldValues>({
   id,
   maxlen,
   isNumber,
-  defaultValue,
+
 }: InputProps<T>) => {
   const validationRules: Record<string, unknown> = {
     required: !notRequired,
@@ -44,7 +44,7 @@ const InputComponent = <T extends FieldValues>({
           className="form-control py-3"
           id={label}
           aria-describedby="emailHelp"
-          placeholder={`Enter ${label}` || placeholder}
+          // placeholder={`Enter ${label}` || placeholder}
           {...register(name, {
             ...validationRules,
            

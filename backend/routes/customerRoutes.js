@@ -33,6 +33,8 @@ router.post('/', async (req, res) => {
 // });
 
 router.get('/', async (req, res) => {
+  console.log(req.headers)
+  console.log(req.user)
     try {
       const projectNames = await Customer.find({ isCompleted: false }).select('projectName');
   

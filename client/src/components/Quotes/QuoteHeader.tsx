@@ -13,12 +13,12 @@ const QuoteHeader = ({ quoteType }: QuoteHeaderProps) => {
       >
         <div
           className="col-2 logo "
-          style={{ maxHeight: "350px", maxWidth: "350px" }}
+          style={{ maxHeight: "450px", maxWidth: "450px" }}
         >
           <img src={logo} alt="jrm " className=" img-fluid " />
         </div>
-        <div className="col-6 align-content-center  align-items-center  d-flex">
-          <h6>{quoteType} Quote</h6>
+        <div className="col-6 align-content-center  align-items-center   text-center ">
+          <h5>{quoteType} Quote</h5>
         </div>
         <div className="col-4 ps-3">
           <ul className="list-group-flush p-0 m-0 ">

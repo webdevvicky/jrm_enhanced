@@ -1,5 +1,4 @@
 
-// apiUtils.ts
 import { AxiosError } from 'axios';
 
 interface CustomError {

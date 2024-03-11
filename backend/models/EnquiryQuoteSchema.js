@@ -7,7 +7,7 @@ const enquiryQuotationSchema = new mongoose.Schema({
     isConstruction:{type:Boolean,default:false},
     totalValue: { type: Number, required: true  },
     isApproved:{type:Boolean, default:false},
-    isCorrection:{type:Boolean, default:false},
+    isRejected:{type:Boolean, default:false},
     approvedId:{
       type: mongoose.Schema.Types.ObjectId, ref: 'User'
     },

@@ -1,62 +1,81 @@
-// NewUser.jsx
 import { useEffect, useState } from "react";
 import { AxiosResponse } from "axios";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import InputComponent from "../Common/FormComponents/InputComponent";
 import userService from "../../services/user/userService";
 import { useNavigate, useParams } from "react-router-dom";
 import SubmitComponent from "../Common/FormComponents/SumitComponent";
 import Header from "../Common/Header/Header";
-import { convertMongoDBDate } from "../../utils/dateConvertionUtils";
+import SelectComponent from "../Common/FormComponents/SelectComponent";
+import Select from "react-select";
+import { handleApiError } from "../../utils/apiUtils";
+import employeeService from "../../services/employee/employeeService";
 
-const NewUser = () => {
+const NewEmployee = () => {
   const { id } = useParams();
-  const isEditMode = !!id;
-  const [formData, setFormData] = useState<Employee>();
+  const isEdit = !!id;
+  const [employee, setEmployee] = useState<Employee>();
+  const navigate = useNavigate();
 
   const {
     register,
     handleSubmit,
+    control,
+    reset,
     formState: { errors },
-    setValue,
-  } = useForm<Employee>({
-    defaultValues: isEditMode
-      ? {
-          ...formData,
-        }
-      : {},
-  });
+  } = useForm<Employee>();
 
   useEffect(() => {
-    if (isEditMode) {
+    if (id) {
       userService
-        .getById<Employee>(id)
-        .then((res: AxiosResponse) => setFormData(res.data));
+        .getById<Employee>(`${id}`)
+        .then((res: AxiosResponse) => {
+          reset(res.data);
+          setEmployee(res.data);
+        })
+        .catch((err: any) => {
+          handleApiError(err);
+        });
     }
-  }, [id, isEditMode, setValue]);
+  }, [id]);
 
-  const onSubmit = (user: any) => {
-    console.log(user);
-    // const serviceMethod = isEditMode ? userService.update : userService.create;
+  const onSubmit = (user: Employee) => {
+    const selectedRoutes = user.selectedOptions.map((item) => item.value);
+    const updated = { ...user, allowedRoutes: selectedRoutes };
 
-    // serviceMethod(user)
-    //   .then(() => {
-    //     window.alert(
-    //       isEditMode ? "User updated successfully" : "User created successfully"
-    //     );
-    //     navigate("/user/list");
-    //   })
-    //   .catch((err: AxiosError) => {
-    //     window.alert(err.response?.statusText);
-    //   });
+    if (id) {
+      const dataWithId = { id: id, ...updated };
+      employeeService
+        .update(dataWithId)
+        .then(() => navigate("/admin/employee"))
+        .catch((err: any) => handleApiError(err));
+    } else {
+      employeeService
+        .create(updated)
+        .then((res: AxiosResponse) => {
+          console.log(res);
+          navigate("/admin/employee");
+        })
+        .catch((err: any) => {
+          handleApiError(err);
+        });
+    }
   };
+
+  const options = [
+    { value: "marketting", label: "Marketting" },
+    { value: "designs", label: "Designs" },
+    { value: "purchase", label: "Purchase" },
+    { value: "accounts", label: "Accounts" },
+    { value: "execution", label: "Execution" },
+  ];
 
   return (
     <div className="container">
-      <Header lable={isEditMode ? "Edit User" : "New User"} />
+      <Header lable={id ? "Edit Employee" : "New Employee"} />
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="row">
-          <div className="col-md-6">
+          <div className=" col-sm-6 col-md-4 col-lg-3">
             <InputComponent
               label="Name"
               name="name"
@@ -65,7 +84,7 @@ const NewUser = () => {
               error={errors.name}
             />
           </div>
-          <div className="col-md-6">
+          <div className=" col-sm-6 col-md-4 col-lg-3">
             <InputComponent
               label="Email"
               name="email"
@@ -74,10 +93,8 @@ const NewUser = () => {
               error={errors.email}
             />
           </div>
-        </div>
 
-        <div className="row">
-          <div className="col-md-6">
+          <div className=" col-sm-6 col-md-4 col-lg-3">
             <InputComponent
               label="Mobile Number"
               name="mobileNumber"
@@ -85,7 +102,7 @@ const NewUser = () => {
               error={errors.mobileNumber}
             />
           </div>
-          <div className="col-md-6">
+          <div className=" col-sm-6 col-md-4 col-lg-3">
             <InputComponent
               label="Alternate Mobile Number"
               name="alternateMobileNumber"
@@ -97,91 +114,7 @@ const NewUser = () => {
         </div>
 
         <div className="row">
-          <div className="col-md-6">
-            <InputComponent
-              label="Employee ID"
-              name="employeeId"
-              register={register}
-              error={errors.employeeId}
-            />
-          </div>
-          <div className="col-md-6">
-            <InputComponent
-              label="Joining Date"
-              type="date"
-              name="joiningDate"
-              register={register}
-              error={errors.joiningDate}
-              defaultValue={"2024-02-02"}
-            />
-          </div>
-        </div>
-
-        <div className="row">
-          <div className="col-md-6">
-            <InputComponent
-              label="Date of Birth"
-              type="date"
-              name="dateOfBirth"
-              register={register}
-              error={errors.dateOfBirth}
-            />
-          </div>
-          <div className="col-md-6">
-            <InputComponent
-              label="Blood Group"
-              name="bloodGroup"
-              placeholder="Enter Blood Group"
-              register={register}
-              error={errors.bloodGroup}
-            />
-          </div>
-        </div>
-
-        <div className="row">
-          <div className="col-md-6">
-            <InputComponent
-              label="Father Name"
-              name="fatherName"
-              placeholder="Enter Father's Name"
-              register={register}
-              error={errors.fatherName}
-            />
-          </div>
-          <div className="col-md-6">
-            <InputComponent
-              label="Father Phone Number"
-              name="fatherPhoneNumber"
-              placeholder="Enter Father's Phone Number"
-              register={register}
-              error={errors.fatherPhoneNumber}
-            />
-          </div>
-        </div>
-
-        <div className="row">
-          <div className="col-md-6">
-            <InputComponent
-              label="Mother Name"
-              name="motherName"
-              placeholder="Enter Mother's Name"
-              register={register}
-              error={errors.motherName}
-            />
-          </div>
-          <div className="col-md-6">
-            <InputComponent
-              label="Mother Phone Number"
-              name="motherPhoneNumber"
-              placeholder="Enter Mother's Phone Number"
-              register={register}
-              error={errors.motherPhoneNumber}
-            />
-          </div>
-        </div>
-
-        <div className="row">
-          <div className="col-md-6">
+          <div className=" col-sm-6 col-md-4 col-lg-3">
             <InputComponent
               label="Address"
               name="address"
@@ -190,7 +123,8 @@ const NewUser = () => {
               error={errors.address}
             />
           </div>
-          <div className="col-md-6">
+
+          <div className=" col-sm-6 col-md-4 col-lg-3">
             <InputComponent
               label="Current Salary"
               type="number"
@@ -200,19 +134,52 @@ const NewUser = () => {
               error={errors.salaryDetails?.currentSalary}
             />
           </div>
-        </div>
 
-        <div className="row">
-          <div className="col-md-6">
-            <InputComponent
+          <div className=" col-sm-6 col-md-4 col-lg-3">
+            <SelectComponent
               label="Role in POL"
               name="role"
-              placeholder="Enter Role in POL"
+              defaultValue={employee?.role}
               register={register}
+              options={[
+                {
+                  value: "admin",
+                  option: "admin",
+                },
+                {
+                  value: "generalmanager",
+                  option: "General Manager",
+                },
+                {
+                  value: "projectmanager",
+                  option: "Project Manager",
+                },
+                {
+                  value: "leadarchitech",
+                  option: "Lead Architech",
+                },
+                {
+                  value: "architech",
+                  option: "Architech",
+                },
+                {
+                  value: "coordinater",
+                  option: "Coordinater",
+                },
+                {
+                  value: "siteengineer",
+                  option: "Site Engineer",
+                },
+                {
+                  value: "marketting",
+                  option: "Marketting",
+                },
+              ]}
               error={errors.role}
             />
           </div>
-          <div className="col-md-6">
+
+          <div className=" col-sm-6 col-md-4 col-lg-3">
             <InputComponent
               label="Designation"
               name="designation"
@@ -224,16 +191,90 @@ const NewUser = () => {
         </div>
 
         <div className="row">
-          <div className="col-md-4">
+          <div className=" col-sm-6 col-md-4 col-lg-3">
+            <InputComponent
+              label="Employee ID"
+              name="employeeId"
+              register={register}
+              error={errors.employeeId}
+            />
+          </div>
+          <div className=" col-sm-6 col-md-4 col-lg-3">
+            <InputComponent
+              label="Joining Date"
+              type="date"
+              name="joiningDate"
+              register={register}
+              error={errors.joiningDate}
+              defaultValue={"2024-02-02"}
+            />
+          </div>
+          <div className=" col-sm-6 col-md-4 col-lg-3">
+            <InputComponent
+              label="Date of Birth"
+              type="date"
+              name="dateOfBirth"
+              register={register}
+              error={errors.dateOfBirth}
+            />
+          </div>
+          <div className=" col-sm-6 col-md-4 col-lg-3">
+            <InputComponent
+              label="Blood Group"
+              name="bloodGroup"
+              placeholder="Enter Blood Group"
+              register={register}
+              error={errors.bloodGroup}
+            />
+          </div>
+        </div>
+
+        <div className="row">
+          <div className=" col-sm-6 col-md-4 col-lg-3">
+            <InputComponent
+              label="Father Name"
+              name="personalDetails.fatherName"
+              register={register}
+              error={errors.personalDetails?.fatherName}
+            />
+          </div>
+          <div className=" col-sm-6 col-md-4 col-lg-3">
+            <InputComponent
+              label="Father Phone Number"
+              name="personalDetails.fatherPhoneNumber"
+              register={register}
+              error={errors.personalDetails?.fatherPhoneNumber}
+            />
+          </div>
+          <div className=" col-sm-6 col-md-4 col-lg-3">
+            <InputComponent
+              label="Mother Name"
+              name="personalDetails.motherName"
+              register={register}
+              error={errors.personalDetails?.motherName}
+            />
+          </div>
+          <div className=" col-sm-6 col-md-4 col-lg-3">
+            <InputComponent
+              label="Mother Phone Number"
+              name="personalDetails.motherPhoneNumber"
+              register={register}
+              error={errors.personalDetails?.motherPhoneNumber}
+            />
+          </div>
+        </div>
+
+        <div className="row">
+          <div className=" col-sm-6 col-md-4 col-lg-3">
             <InputComponent
               register={register}
               label="Account Number"
-              error={errors.accountDeatails?.AccountNumber}
-              name="accountDeatails.AccountNumber"
+              error={errors.accountDeatails?.accountNumber}
+              name="accountDeatails.accountNumber"
               notRequired
             />
           </div>
-          <div className="col-md-4">
+          <div className=" col-sm-6 col-md-4 col-lg-3">
             <InputComponent
               register={register}
               label="IFSC"
@@ -242,7 +283,7 @@ const NewUser = () => {
               notRequired
             />
           </div>
-          <div className="col-md-4">
+          <div className=" col-sm-6 col-md-4 col-lg-3">
             <InputComponent
               register={register}
               label="UPI Number"
@@ -251,9 +292,7 @@ const NewUser = () => {
               notRequired
             />
           </div>
-        </div>
-        <div className="row">
-          <div className="col-md-6">
+          <div className=" col-sm-6 col-md-4 col-lg-3">
             <InputComponent
               name="idProofDetails.idType"
               label="ID Proof Type"
@@ -262,8 +301,10 @@ const NewUser = () => {
               notRequired
             />
           </div>
-          <div className="col-md-6">
-            {" "}
+        </div>
+
+        <div className="row">
+          <div className=" col-sm-6 col-md-4 col-lg-3">
             <InputComponent
               name="idProofDetails.idNumber"
               label="ID Proof Number"
@@ -272,31 +313,37 @@ const NewUser = () => {
               notRequired
             />
           </div>
+          <div className="col-sm-6 col-md-4 col-lg-3">
+            <InputComponent
+              label="Password"
+              type="password"
+              name="password"
+              placeholder="Enter Password"
+              register={register}
+              error={errors.password}
+            />
+          </div>
         </div>
 
-        {!isEditMode && (
-          <div className="row">
-            <div className="col-md-12">
-              <InputComponent
-                label="Password"
-                type="password"
-                name="password"
-                placeholder="Enter Password"
-                register={register}
-                error={errors.password}
-              />
-            </div>
+        <div className="row">
+          <div className="col-md-12">
+            <label className=" form-label  fw-bold  mb-3">Select Options</label>
+            <Controller
+              name="selectedOptions"
+              control={control}
+              render={({ field }) => (
+                <Select isMulti options={options} {...field} />
+              )}
+            />
           </div>
-        )}
+        </div>
 
         {/* Continue adding more InputComponents for other fields if needed */}
 
-        <SubmitComponent
-          btnlable={isEditMode ? "Update User" : "Create New User"}
-        />
+        <SubmitComponent btnlable={id ? "Update User" : "Create New User"} />
       </form>
     </div>
   );
 };
 
-export default NewUser;
+export default NewEmployee;

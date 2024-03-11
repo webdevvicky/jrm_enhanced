@@ -87,10 +87,10 @@ export interface FloatingInputProps<T extends FieldValues> {
     empName:string
   }
 
-  export interface SelectOptions {
-    value: string;
-    option: string;
-  }
+  // export interface SelectOptions {
+  //   value: string;
+  //   option: string;
+  // }
 
   
   export  interface FormSelectProps {

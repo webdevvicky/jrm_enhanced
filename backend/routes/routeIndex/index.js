@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
+const { verifyTokenMiddleware } = require('../../middlewares/verifyTokenMiddleware');
+const setCreatedByFieldMiddleware =require('../../middlewares/setCreatedByField')
 const auth = require('../auth')
 const userRoutes=require('../userRoutes')
 const customerRoutes = require('../customerRoutes')
@@ -11,10 +13,18 @@ const contractorRoutes = require('../contractorRoutes')
 const vendorRoutes = require('../vendorRoutes')
 const EnquiryRoutes = require('../EnquiryRoutes')
 const EnquiryQuoteRoutes = require('../enquiryQuoteRoutes')
+const DesignsRoutes = require('../designsRoutes')
 
+// not protected route , it did't ask for token -- only for logins 
+router.use('/login', auth)
+
+
+// midlleware to check token -- below routes need token to access 
+router.use(verifyTokenMiddleware);
+router.use(setCreatedByFieldMiddleware)
+// protected routes 
 
 router.use('/user',userRoutes)
-router.use('/login', auth)
 router.use('/project',customerRoutes)
 router.use('/quote',quotationRoutes)
 router.use('/invoice',invoiceRoutes)
@@ -23,6 +33,7 @@ router.use('/contractor',contractorRoutes)
 router.use('/vendor',vendorRoutes)
 router.use('/enquiry',EnquiryRoutes)
 router.use('/enquiry/api/quote',EnquiryQuoteRoutes)
+router.use('/designs',DesignsRoutes)
 
 
 

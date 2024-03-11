@@ -4,8 +4,10 @@ const router = express.Router();
 const authUtils = require('../utils/authUtils');
 const User = require('../models/UserSchema'); 
 const Customer = require('../models/CustomerSchema'); 
+const errorHandler = require('../utils/errorHandler')
 
 router.post('/', async (req, res) => {
+ try{
   const { email, password, userType } = req.body;
 
   let userModel;
@@ -28,11 +30,15 @@ router.post('/', async (req, res) => {
   const token = await authUtils.login(userModel, email, password);
 
   if (token) {
-    const decodedToken = authUtils.verifyToken(token);
-    res.json({ token, userId: decodedToken.id, userRole: decodedToken.role });
+    res.json({ token});
   } else {
     res.status(401).json({ error: 'Invalid credentials' });
   }
+ }catch(error){
+
+  errorHandler(res,error)
+  
+ }
 });
 
 module.exports = router;

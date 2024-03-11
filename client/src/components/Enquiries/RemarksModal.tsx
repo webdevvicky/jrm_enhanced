@@ -5,11 +5,7 @@ import { AxiosResponse } from "axios";
 import { handleApiError } from "../../utils/apiUtils";
 import enquiryServices from "../../services/enquiry/enquiryServices";
 import enquiryRemarksServices from "../../services/enquiry/enquiryRemarksServices";
-import {
-  convertMongoDBDate,
-  convertMongoDate,
-  getCurrentDate,
-} from "../../utils/dateConvertionUtils";
+import { convertMongoDate } from "../../utils/dateConvertionUtils";
 
 interface RemarksModalProps {
   enquiryId: string;
@@ -57,6 +53,10 @@ const RemarksModal: React.FC<RemarksModalProps> = ({ enquiryId }) => {
             ></button>
           </div>
           <div className="modal-body">
+            <small className="text-muted mt-1">
+              {RemarksData?.createdAt &&
+                convertMongoDate(RemarksData?.createdAt)}
+            </small>
             <p>{RemarksData?.initialRemark}</p>
             <div>
               {RemarksData?.remarks?.map((remark, index) => (

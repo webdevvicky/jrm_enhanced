@@ -4,20 +4,20 @@ import { ArrayField } from "../../interfaces/CommonProps";
 import SubmitComponent from "../Common/FormComponents/SumitComponent";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import enquiryQuoteServices from "../../services/enquiry/enquiryQuoteServices";
 import { AxiosResponse } from "axios";
 import { handleApiError } from "../../utils/apiUtils";
 import EditButton from "../Common/AuthButtons/EditButton";
+import quoteService from "../../services/quote/quoteService";
 
-const EnquiryQuotation = () => {
+const Quote = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { state } = useLocation();
   const [totalValue, setTotalValue] = useState(0);
-  const [editQuoate, setEditQuote] = useState<EnquiryQuoteModelProps>();
-
+  const [editQuoate, setEditQuote] = useState<QuoteModelProps>();
+  console.log(state);
   const { register, control, handleSubmit, watch, reset } =
-    useForm<EnquiryQuoteProps>();
+    useForm<NewQuoteProps>();
 
   const itemFields: ArrayField[] = [
     {
@@ -39,23 +39,30 @@ const EnquiryQuotation = () => {
   ];
 
   useEffect(() => {
-    if (state._id || state.lastQuoteId) {
-      const id = state._id || state.lastQuoteId;
-      enquiryQuoteServices
-        .getById<EnquiryQuoteModelProps>(id)
+    if (state._id) {
+      quoteService
+        .getById<QuoteModelProps>(state._id)
         .then((res: AxiosResponse) => {
           reset(res.data);
           setEditQuote(res.data);
         });
     }
-  }, [state.isEdit, state.lastQuoteId]);
+  }, [state.isEdit]);
 
   const handleTotalChange = (total: string) => {
     setTotalValue(parseFloat(total));
   };
 
-  const handleFormSubmit = (data: EnquiryQuoteProps) => {
-    const UpdatedData = { ...data, enquiryId: id, totalValue: totalValue };
+  const handleFormSubmit = (data: NewQuoteProps) => {
+    const UpdatedData: NewQuoteProps = {
+      ...data,
+      totalValue: totalValue,
+      isConstruction: state.construction,
+      isRevised: state.revised,
+      isAdditional: state.additional,
+      isInterior: state.interior,
+      projectId: state.projectId,
+    };
 
     if (state._id) {
       const updatedDataWithId = {
@@ -63,7 +70,7 @@ const EnquiryQuotation = () => {
         _id: state._id,
         isCorrection: false,
       };
-      enquiryQuoteServices
+      quoteService
         .update(updatedDataWithId)
         .then((res: AxiosResponse) => {
           navigate(`/marketting/quote/model/${res.data._id}`);
@@ -72,13 +79,8 @@ const EnquiryQuotation = () => {
           handleApiError(err);
         });
     } else {
-      const newquote: EnquiryQuoteProps = {
-        enquiryId: UpdatedData.enquiryId || "",
-        items: UpdatedData.items,
-        totalValue: UpdatedData.totalValue,
-      };
-      enquiryQuoteServices
-        .create(newquote)
+      quoteService
+        .create(UpdatedData)
         .then((res: AxiosResponse) => {
           navigate(`/marketting/quote/model/${res.data._id}`);
         })
@@ -90,7 +92,19 @@ const EnquiryQuotation = () => {
 
   return (
     <div className=" container">
-      <div className="row">Name -- {state.name}</div>
+      <div className="row">
+        <div className="col-md-6">Site Name -- {state.projectName}</div>
+        <div className="col-md-6">
+          QuoteType --{" "}
+          {state.additional
+            ? "Adiitonal"
+            : state.construction
+            ? "Construction "
+            : state.interior
+            ? "Interior"
+            : ""}
+        </div>
+      </div>
       <form onSubmit={handleSubmit(handleFormSubmit)}>
         <ArrayInput
           register={register}
@@ -112,4 +126,4 @@ const EnquiryQuotation = () => {
   );
 };
 
-export default EnquiryQuotation;
+export default Quote;
