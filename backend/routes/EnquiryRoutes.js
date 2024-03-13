@@ -17,7 +17,7 @@ router.post('/', async (req, res) => {
 // Get all enquiries
 router.get('/', async (req, res) => {
   try {
-    const enquiries = await Enquiry.find({ priority: { $ne: 5 } }); // Exclude priority 5
+    const enquiries = await Enquiry.find({ priority: { $ne: 5 },isBooked:{$ne:true} }); // Exclude priority 5
    if(!enquiries){
     return res.send("No Enquiries Found")
    }
@@ -31,21 +31,21 @@ router.get('/', async (req, res) => {
 
 // get moved to booking enquiries 
 
-router.get('/booking',async (req,res)=>{
+router.get('/booking', async (req, res) => {
+  try {
+    const movedBooking = await Enquiry.find({ movedToBook: true, isBooked: false })
+      .select('name location fileNumber mobileNumber email');
 
-try{
+    if (!movedBooking || movedBooking.length === 0) {
+      return res.status(404).send({error:'No New booking found'});
+    }
 
-  const movedBokking = await Enquiry.find({movedToBook:true,isBooked:false}).select('name location fileNumber mobileNumber email')
-  if(!movedBokking || movedBokking.length <=0){
-    res.status(404).send("No Booking Found")
+    res.status(200).send(movedBooking);
+  } catch (error) {
+    errorHandler(res, error);
   }
+});
 
-  res.status(200).send(movedBokking)
-
-}catch(error){
-  errorHandler(res,error)
-}
-})
 
 
 // Get enquiry by ID

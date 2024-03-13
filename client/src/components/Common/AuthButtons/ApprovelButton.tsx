@@ -1,5 +1,11 @@
 import React from "react";
 import { isAdmin } from "../../../utils/auth";
+import {
+  FileCheck,
+  FileCheckFill,
+  PatchCheck,
+  PersonCheckFill,
+} from "react-bootstrap-icons";
 
 interface AdminBtnProps {
   onClick?: () => void;
@@ -15,12 +21,16 @@ const ApprovelButton: React.FC<AdminBtnProps> = ({
   return (
     <button
       onClick={onClick}
-      className={`btn btn-outline-success ${
+      className={`btn  text-success border-0  ${
         !isAdmin() || isApproved ? "disabled " : ""
       }`}
       disabled={!isAdmin() || isApproved}
     >
-      {label || isApproved ? "Approved " : "Approve"}
+      {label || isApproved ? (
+        <PersonCheckFill size={30} />
+      ) : (
+        <PatchCheck size={30} />
+      )}
     </button>
   );
 };

@@ -10,25 +10,17 @@ const customerSchema = new mongoose.Schema({
     lowercase: true,
   },
   mobileNumber: { type: Number, required: true },
-  alternateMobile: { type: Number },
-  password: { type: String, required: true, select: false },
-  profilePicture: String,
-  projectName: { type: String, required: true },
-  projectAddress: { type: String, required: true },
-  projectLocation: { type: String, required: true },
-  fileNumber: { type: Number, required: true },
-  pinCode: { type: String, required: true },
-  alternateEmail: { type: String },
-  created:{
+  password: { type: String, select: false },
+
+  createdBy:{
     type: mongoose.Schema.Types.ObjectId,
     ref:'User'
   },
 
-  startDate: { type: Date },
-  completionDate: { type: Date },
-  isCompleted: { type: Boolean, default: false },
-  completedDate: { type: Date },
-  role: { type: String, enum: ['customer'], default: 'customer' }, // Add role field
+  role: { type: String, enum: ['customer'], default: 'customer' },
+  project:{ type: mongoose.Schema.Types.ObjectId,
+    ref:'Project'},
+  status:{type:Boolean,default:true}
 }, {
   timestamps: true,
 });
@@ -42,7 +34,7 @@ customerSchema.pre('save', function (next) {
   next();
 });
 
-// Create a case-insensitive index for the email field
+//Create a case-insensitive index for the email field
 customerSchema.index({ email: 1 }, { unique: true, collation: { locale: 'en', strength: 2 } });
 
 const Customer = mongoose.model('Customer', customerSchema);

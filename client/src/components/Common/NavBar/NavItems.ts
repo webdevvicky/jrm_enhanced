@@ -13,7 +13,9 @@
       to: "designs",
       subcategories: [
         {to:'/designs/booking',label:'Booking'},
+
         { to: "/designs/list", label: "Designs&Quote" },
+        {to:'/designs/booking/status',label:'Status'},
       ],
     },
     {

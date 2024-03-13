@@ -1,10 +1,11 @@
 import React from "react";
 import { isAdmin } from "../../../utils/auth";
+import { Pencil } from "react-bootstrap-icons";
 
 interface EditButtonProps {
   onClick?: () => void;
   label?: string;
-  isRejected: boolean;
+  isRejected?: boolean;
 }
 
 const EditButton: React.FC<EditButtonProps> = ({
@@ -15,10 +16,10 @@ const EditButton: React.FC<EditButtonProps> = ({
   return (
     <button
       onClick={onClick}
-      className={`btn btn-outline-success w-100 `}
+      className={`btn  text-success border-0   w-100 `}
       disabled={!isRejected && !isAdmin()}
     >
-      {label || "Edit"}
+      {label || <Pencil size={25} />}
     </button>
   );
 };

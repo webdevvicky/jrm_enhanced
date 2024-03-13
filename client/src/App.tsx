@@ -10,7 +10,6 @@ import {
 } from "./utils/auth";
 
 const App = () => {
-  
   useTokenNavigationEffect();
 
   const allowedRoutes = getAllowedRoutes();
@@ -24,7 +23,10 @@ const App = () => {
       {isLoggedIn() && (
         <NavBar navItems={isAdmin() ? navItems : filteredNavItems} />
       )}
-      <ProtectedRoutes />
+
+      <div className=" bg-brown py-2" style={{ minHeight: "85vh" }}>
+        <ProtectedRoutes />
+      </div>
     </div>
   );
 };

@@ -30,31 +30,29 @@ interface NewProjectProps{
     password: string;
     status:boolean;
 
-    enquiryId:string
+    enquiry:string
 }
 
-interface ProjectCardProps{
-    _id: string;
-    projectName: string;
-    name: string;
-    projectAddress: string;
-    projectLocation: string;
-    city: string;
-    fileNumber: number;
-    pinCode: string;
-    mobileNumber: number;
-    email: string;
-    status: boolean;
-    userCredentialsId: string;
-    alternateEmail:string,
-    alternateMobile:number,
-    ProjectValue:number,
-    startDate:string,
-    completionDate:string,
-    __v: number;
+interface ProjectList {
+    _id:string,
+    fileNumber:number
+    projectName:string
+    mobileNumber:number
+    email:string
 }
 
-interface CompletedProjectProps{
-    projectName:string,
-    completedDate:string
+interface ProjectApprovelList{
+    _id:string,
+    projectName:string
+    fileNumber:number
+    isRejected:boolean
+    isApproved:boolean,
+
 }
+
+
+interface ProjectProps extends NewProjectProps{
+    _id:string,
+    
+}
+

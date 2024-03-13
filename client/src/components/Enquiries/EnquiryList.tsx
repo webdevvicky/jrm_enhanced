@@ -113,7 +113,7 @@ const EnquiriesList = () => {
           </div>
         </div>
       </div>
-      <div className="row">
+      <div className="row table-responsive ">
         <table className=" table  table-bordered  border-primary-subtle  ">
           <thead>
             <tr className=" text-center">

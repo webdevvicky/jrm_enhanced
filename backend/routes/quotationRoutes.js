@@ -5,9 +5,9 @@ const Quote = require('../models/QuotationSchema');
 
 router.post('/', async (req, res) => {
   try {
-    const { isAdditional, isInterior, projectId } = req.body;
+    const { isAdditional, isInterior, project } = req.body;
 
-    const firstQuote = await Quote.findOne({ projectId });
+    const firstQuote = await Quote.findOne({ project });
 
     if (!firstQuote) {
       const newQuoteData = {
@@ -20,11 +20,11 @@ router.post('/', async (req, res) => {
     } else {
       let lastQuote;
       if (isAdditional) {
-        lastQuote = await Quote.findOne({ projectId, isAdditional: true }).sort({ rev: -1 }).exec();
+        lastQuote = await Quote.findOne({ project, isAdditional: true }).sort({ rev: -1 }).exec();
       } else if (isInterior) {
-        lastQuote = await Quote.findOne({ projectId, isInterior: true }).sort({ rev: -1 }).exec();
+        lastQuote = await Quote.findOne({ project, isInterior: true }).sort({ rev: -1 }).exec();
       } else {
-        lastQuote = await Quote.findOne({ projectId }).sort({ rev: -1 }).exec();
+        lastQuote = await Quote.findOne({ project }).sort({ rev: -1 }).exec();
       }
 
       let newRevNumber;
@@ -40,7 +40,6 @@ router.post('/', async (req, res) => {
       const newQuoteData = {
         ...req.body,
         rev: newRevNumber,
-        isRevised: !req.body.isConstruction && !req.body.isAdditional && !req.body.isInterior ? true : false,
       };
 
       const newQuote = new Quote(newQuoteData);
@@ -61,7 +60,7 @@ router.get("/", async (req, res) => {
   try {
     // Use populate to include details from ProjectInfo
     const quotations = await Quote.find({})
-      .populate('projectId', 'projectName clientName email mobile fileNumber')
+      .populate('project', 'projectName name email mobileNumber fileNumber')
       .exec();
     res.status(200).json(quotations);
   } catch (err) {
@@ -78,8 +77,8 @@ router.get('/project/:projectId', async (req, res) => {
     const projectId = req.params.projectId;
 
     // Fetch quotes for the specified projectId
-    const quotes = await Quote.find({ "projectId": projectId ,isApproved:true})
-      .select('_id rev date isAdditional isRevised isInterior isConstruction totalValue')
+    const quotes = await Quote.find({ "project": projectId ,isApproved:true})
+      .select('_id rev date isAdditional  isInterior isConstruction totalValue')
       if (!quotes || quotes.length === 0) {
         return res.status(404).json({ error: 'No quotes found for the specified project' });
       }
@@ -95,7 +94,7 @@ router.get('/project/:projectId', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
   try {
-    const quote = await Quote.findById(req.params.id).populate('projectId', 'projectName name email mobileNumber projectLocation fileNumber');
+    const quote = await Quote.findById(req.params.id).populate('project', 'projectName name email mobileNumber location fileNumber');
     res.json(quote);
   } catch (err) {
     res.status(500).json({ error: 'Internal Server Error' });
@@ -106,7 +105,7 @@ router.get('/:id', async (req, res) => {
 router.get('/approvel/all', async (req, res) => {
   try {
     const quotations = await Quote.find({ isApproved: false })
-      .populate('projectId', 'projectName name _id')
+      .populate('project', 'projectName name _id')
       .exec();
     res.status(200).json(quotations);
   } catch (err) {

@@ -67,10 +67,13 @@ const NewEnquiry = () => {
     }
   };
   return (
-    <div className=" container">
-      <Header lable="New Enquiry" />
+    <div className=" container bg-white my-3   border-opacity-50  border   rounded-3  ">
+      <div className="py-3">
+        {" "}
+        <Header lable="New Enquiry " />
+      </div>
       <form onSubmit={handleSubmit(handleSubmitEnquiry)}>
-        <div className="row">
+        <div className="row ">
           <div className="col-sm-6 col-md-4 col-lg-3">
             <SelectComponent
               options={[1, 2, 3, 4, 5].map((value) => ({

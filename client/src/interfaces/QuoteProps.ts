@@ -11,7 +11,7 @@ interface QuoteItemProps {
   }
 
 interface NewQuoteProps{
-    projectId:string,
+    project:string,
     rev:number | null,
     totalValue:number,
     isAdditional:boolean,
@@ -44,5 +44,16 @@ interface QuoteModelProps{
     status: boolean; 
     totalValue: number;
     __v: number;
+}
+
+interface QuoteListProps{
+  _id:string,
+  isConstruction:boolean,
+  isRevised:boolean,
+  isInterior:boolean,
+  isAdditional:boolean,
+  rev:number,
+
+
 }
 

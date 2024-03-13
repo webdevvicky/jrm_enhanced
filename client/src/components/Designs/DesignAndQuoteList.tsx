@@ -6,10 +6,14 @@ import { Link } from "react-router-dom";
 
 import { handleApiError } from "../../utils/apiUtils";
 import designUsingProjectService from "../../services/designs/designUsingProjectService";
+import DeleteButton from "../Common/AuthButtons/DeleteButton";
+
+import QuoationList from "./QuoationList";
 interface DesignProps {
   fileName: string;
   designFile: string;
   projectId: string;
+  _id: string;
 }
 
 const DesignAndQuoteList = () => {
@@ -34,9 +38,12 @@ const DesignAndQuoteList = () => {
     setSelectedProject(project);
   };
 
+  const handleDeleteDesign = () => {
+    console.log("first");
+  };
   return (
-    <div className="container  ">
-      <div className="row py-1 bg-body-secondary justify-content-center  d-flex align-items-center ">
+    <div className="container ">
+      <div className="row  bg-white  py-1 bg-body-secondary justify-content-center  d-flex align-items-center ">
         <div className="col-md-3 text-end   ">
           <SelectProjectComponent onChange={handleChangeProject} />
         </div>
@@ -52,7 +59,7 @@ const DesignAndQuoteList = () => {
         <div>
           {/* Finalized Designs box  */}
 
-          <div className="row border my-2 ">
+          <div className="row border my-2 bg-white  border  rounded-3  ">
             <div className="row py-2">
               <div className="col-md-6">
                 <h5>Finalized Designs</h5>
@@ -86,10 +93,11 @@ const DesignAndQuoteList = () => {
                             <Image size={100} className=" text-center " />
                           </div>
                         )}
-                        <div className=" card-footer text-truncate ">
+                        <div className=" card-footer text-truncate  bg-white ">
                           {design.fileName}
                         </div>
                       </Link>
+                      <DeleteButton onClick={() => handleDeleteDesign()} />
                     </div>
                   </div>
                 </div>
@@ -98,122 +106,9 @@ const DesignAndQuoteList = () => {
           </div>
 
           {/*  Finalized Quotation*/}
-
-          <div className="row border my-2">
-            <div className="row py-2">
-              <div className="col-md-6">
-                <h5>Finalized Quotation</h5>
-              </div>
-              <div className="col-md-6 text-end">
-                Revise Quotation{" "}
-                <Link
-                  to={"/designs/quote/new"}
-                  state={{
-                    projectId: selectedProject?._id,
-                    projectName: selectedProject?.projectName,
-                    revised: true,
-                    construction: true,
-                  }}
-                >
-                  <PlusSquareDotted size={30} />
-                </Link>
-              </div>
-            </div>
-
-            <div className=" row ">
-              <div className=" col-md-2  col-sm-6 pb-2">
-                <div className="card text-center ">
-                  <div className=" card-img-top ">
-                    <Link to={"quote"} className="text-decoration-none  ">
-                      <h1 className="    text-danger  my-4  ">R 1</h1>
-                      <div className=" card-footer ">Quotation</div>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-              <div className=" col-md-2  col-sm-6 pb-2">
-                <div className="card text-center ">
-                  <div className=" card-img-top ">
-                    <Link to={"quote"} className="text-decoration-none  ">
-                      <h1 className="    text-danger  my-4  ">R 1</h1>
-                      <div className=" card-footer ">Quotation</div>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Interior Quotation */}
-
-          <div className="row border my-2">
-            <div className="row py-2">
-              <div className="col-md-6">
-                <h5>Interior Quotation</h5>
-              </div>
-              <div className="col-md-6 text-end">
-                Revise Quotation{" "}
-                <Link
-                  to={"/designs/quote/new"}
-                  state={{
-                    projectId: selectedProject?._id,
-                    projectName: selectedProject?.projectName,
-                    interior: true,
-                  }}
-                >
-                  <PlusSquareDotted size={30} />
-                </Link>
-              </div>
-            </div>
-
-            <div className=" row">
-              <div className=" col-md-2  col-sm-6 pb-2">
-                <div className="card text-center ">
-                  <div className=" card-img-top ">
-                    <Link to={"quote"} className="text-decoration-none  ">
-                      <h1 className="    text-danger  my-4  ">R 1</h1>
-                      <div className=" card-footer ">Quotation</div>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/*Additional Items  */}
-
-          <div className="row border my-2">
-            <div className="row py-2">
-              <div className="col-md-6">
-                <h5>Additional Items Quotation</h5>
-              </div>
-              <div className="col-md-6 text-end">
-                Revise Quotation{" "}
-                <Link
-                  to={"/designs/quote/new"}
-                  state={{
-                    projectId: selectedProject?._id,
-                    projectName: selectedProject?.projectName,
-                    additional: true,
-                  }}
-                >
-                  <PlusSquareDotted size={30} />
-                </Link>
-              </div>
-            </div>
-
-            <div className=" row">
-              <div className=" col-md-2  col-sm-6 pb-2">
-                <div className="card text-center ">
-                  <div className=" card-img-top ">
-                    <Link to={"quote"} className="text-decoration-none  ">
-                      <h1 className="    text-danger  my-4  ">R 1</h1>
-                      <div className=" card-footer ">Quotation</div>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="row">
+            {" "}
+            <QuoationList selectedProject={selectedProject} />
           </div>
         </div>
       )}

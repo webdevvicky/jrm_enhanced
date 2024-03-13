@@ -14,6 +14,7 @@ const vendorRoutes = require('../vendorRoutes')
 const EnquiryRoutes = require('../EnquiryRoutes')
 const EnquiryQuoteRoutes = require('../enquiryQuoteRoutes')
 const DesignsRoutes = require('../designsRoutes')
+const ProjectRoutes = require('../ProjectRoutes')
 
 // not protected route , it did't ask for token -- only for logins 
 router.use('/login', auth)
@@ -25,7 +26,8 @@ router.use(setCreatedByFieldMiddleware)
 // protected routes 
 
 router.use('/user',userRoutes)
-router.use('/project',customerRoutes)
+router.use('/customer',customerRoutes)
+router.use('/project',ProjectRoutes)
 router.use('/quote',quotationRoutes)
 router.use('/invoice',invoiceRoutes)
 router.use('/purchase',poRoutes)

@@ -11,7 +11,7 @@ const enquiryQuotationSchema = new mongoose.Schema({
     approvedId:{
       type: mongoose.Schema.Types.ObjectId, ref: 'User'
     },
-    status:{type:Boolean, default:true},
+  status:{type:Boolean, default:true},
   items: [
     {
       id: Number,

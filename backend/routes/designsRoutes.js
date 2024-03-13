@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const mongoose = require('mongoose');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -47,29 +46,41 @@ res.send(files)
     }
 })
 
-router.get('/:id', async (req, res) => {
-    try {
-      const design = await Design.findById(req.params.id);
-      if (!design) {
-        return res.status(404).send();
-      }
+// router.get('/:id', async (req, res) => {
+//     try {
+//       const design = await Design.findById(req.params.id);
+//       if (!design) {
+//         return res.status(404).send();
+//       }
   
-      const filePath = path.join(__dirname, 'uploads', design.file);
+//       const filePath = path.join(__dirname, 'uploads', design.file);
   
-      // Check if the file exists
-      if (!fs.existsSync(filePath)) {
-        return res.status(404).send('File not found');
-      }
+//       // Check if the file exists
+//       if (!fs.existsSync(filePath)) {
+//         return res.status(404).send('File not found');
+//       }
   
-      // Read the file and send it as a response
-      const fileStream = fs.createReadStream(filePath);
-      fileStream.pipe(res);
-    } catch (error) {
-      console.error(error);
-      res.status(500).send(error.message || 'Internal Server Error');
-    }
-  });
+//       // Read the file and send it as a response
+//       const fileStream = fs.createReadStream(filePath);
+//       fileStream.pipe(res);
+//     } catch (error) {
+//       console.error(error);
+//       res.status(500).send(error.message || 'Internal Server Error');
+//     }
+//   });
 
+
+router.get('/:id', async (req,res)=>{
+  try{
+    const design = await Design.findById(req.params.id)
+    if(!design){
+    res.status(404).send({error:"No File Found"})
+    }
+    res.send(design)
+  }catch(error){
+res.status(500).send({error:"server error"})
+  }
+})
 
 router.get('/project/:id', async (req,res)=>{
   try{
@@ -83,5 +94,46 @@ router.get('/project/:id', async (req,res)=>{
     res.status(500).send(error.message || 'Internal Server Error');
   }
 })
+
+
+
+// DELETE route for deleting a file
+router.delete('/:id', async (req, res, next) => {
+  try {
+    const deleteFile = await Design.findById(req.params.id);
+    
+    if (!deleteFile) {
+      return res.status(404).json({ message: 'File not found' });
+    }
+
+    const fileName = path.basename(deleteFile.designFile);
+    const filePathFinal = path.resolve(__dirname, '..', 'uploads', 'designs', fileName);
+
+
+    fs.unlink(filePathFinal, async (err) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'Error deleting file' });
+      }
+
+      // If the file deletion is successful, delete the document from the database
+      try {
+        await Design.findByIdAndDelete(req.params.id);
+        res.status(200).json({ message: 'File and document deleted successfully' });
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error deleting document' });
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
+
+
+
 
 module.exports = router;

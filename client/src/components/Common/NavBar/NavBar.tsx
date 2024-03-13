@@ -40,7 +40,7 @@ const NavBar = ({ navItems }: NavBarProps) => {
   }, []);
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-light text-black mb-3 border-bottom  shadow-sm  ">
+    <nav className="navbar navbar-expand-lg navbar-light text-black  border-bottom  shadow-sm  ">
       <div className="container-lg">
         <div
           style={{ maxWidth: "80px", maxHeight: "100px" }}

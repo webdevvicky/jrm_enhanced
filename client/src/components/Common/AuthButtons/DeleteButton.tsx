@@ -4,7 +4,7 @@ import { isAdmin } from "../../../utils/auth";
 interface DeleteBtnProps {
   onClick?: () => void;
   label?: string;
-  isApproved: boolean;
+  isApproved?: boolean;
 }
 
 const DeleteButton: React.FC<DeleteBtnProps> = ({

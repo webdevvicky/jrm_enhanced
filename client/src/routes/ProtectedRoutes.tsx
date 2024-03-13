@@ -12,10 +12,9 @@ import EnquiryQuoteModel from "../components/Enquiries/EnquiryQuoteModel";
 import NewEnquiry from "../components/Enquiries/NewEnquiry";
 import UnAuthorised from "../components/Pages/UnAuthorised";
 import NewProject from "../components/Projects/NewProject";
-import ProjectCard from "../components/Projects/ProjectCard";
-import QuoteApprovel from "../components/Quotes/QuoteApprovel";
+
 import Login from "../components/Pages/Login";
-import Quote from "../components/Quotes/Quote";
+
 import { getAllowedRoutes, getUserRole, isLoggedIn } from "../utils/auth";
 import UnApprovedPoList from "../components/PurchaseOrders/UnApprovedPoList";
 import UnVerifiedPoList from "../components/PurchaseOrders/UnVerifiedPoList";
@@ -23,7 +22,10 @@ import ApprovelList from "../components/Admin/ApprovelList";
 import VendorList from "../components/Vendors/VendorList";
 import ContractorList from "../components/Contractors/ContractorList";
 import ProjectList from "../components/Projects/ProjectList";
-import NewPo from "../components/PurchaseOrders/NewPo";
+import Projectstatus from "../components/Projects/Projectstatus";
+import ProjectInfo from "../components/Projects/ProjectInfo";
+import QuoteForm from "../components/Quotes/QuoteForm";
+import QuoteModel from "../components/Quotes/QuoteModel";
 
 const ProtectedRoutes = () => {
   const isAdmin = getUserRole() === "admin";
@@ -69,7 +71,8 @@ const ProtectedRoutes = () => {
                 <Route index element={<ProjectList />} />
                 <Route path="new" element={<NewProject />} />
                 <Route path="edit/:id" element={<NewProject />} />
-                <Route path="po" element={<NewPo/>}/>
+                <Route path="status" element={<Projectstatus />} />
+                <Route path="info/:id" element={<ProjectInfo />} />
               </Route>
 
               <Route path="new" element={<DesignsUpload />} />
@@ -77,10 +80,9 @@ const ProtectedRoutes = () => {
               <Route path="edit/:id" element={<NewEnquiry />} />
 
               <Route path="quote">
-                <Route path="new" element={<Quote />} />
-                <Route path="list" element={<QuoteApprovel />} />
-                <Route path="po" element={<UnApprovedPoList />} />
-                <Route path="pov" element={<UnVerifiedPoList />} />
+                <Route path="new" element={<QuoteForm />} />
+                <Route path="edit/:id" element={<QuoteForm />} />
+                <Route path="model/:id" element={<QuoteModel />} />
               </Route>
             </Route>
           )}
@@ -96,7 +98,6 @@ const ProtectedRoutes = () => {
               </Route>
 
               <Route path="project">
-                <Route index element={<ProjectCard />} />
                 <Route path="new" element={<NewProject />} />
                 <Route path="edit/:id" element={<NewProject />} />
               </Route>
