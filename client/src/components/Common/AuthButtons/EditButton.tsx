@@ -16,7 +16,12 @@ const EditButton: React.FC<EditButtonProps> = ({
   return (
     <button
       onClick={onClick}
-      className={`btn  text-success border-0   w-100 `}
+      //className={`btn  text-success border-0   w-100 `}
+      className={
+        label
+          ? " btn btn-outline-success  w-100"
+          : " btn border-0 w-100 text-success"
+      }
       disabled={!isRejected && !isAdmin()}
     >
       {label || <Pencil size={25} />}

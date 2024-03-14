@@ -32,6 +32,9 @@ import VendorForm from "../components/Vendors/VendorForm";
 import ContractorForm from "../components/Contractors/ContractorForm";
 import PoList from "../components/PurchaseOrders/PoList";
 import AccountsHome from "../components/Accounts/AccountsHome";
+import VendorInfo from "../components/Vendors/VendorInfo";
+import VendorsStatus from "../components/Vendors/VendorsStatus";
+import AccountsStatus from "../components/Accounts/AccountsStatus";
 
 const ProtectedRoutes = () => {
   const isAdmin = getUserRole() === "admin";
@@ -94,8 +97,8 @@ const ProtectedRoutes = () => {
           )}
 
           {(allowedRoutes.includes("accounts") || isAdmin) && (
-            <Route path="/accounts"> 
-            <Route  index element={<AccountsHome/>}/>
+            <Route path="/accounts">
+              <Route index element={<AccountsHome />} />
               <Route path="gst">
                 <Route index element={<GstPage />} />
                 <Route path="new" element={<GstForm />} />
@@ -106,6 +109,9 @@ const ProtectedRoutes = () => {
                 <Route index element={<VendorList />} />
                 <Route path="new" element={<VendorForm />} />
                 <Route path="edit/:id" element={<VendorForm />} />
+                <Route path="view/:id" element={<VendorInfo />} />
+                <Route path="view/:id" element={<VendorInfo />} />
+                <Route path="status" element={<VendorsStatus />} />
               </Route>
               <Route path="contractor">
                 <Route index element={<ContractorList />} />
@@ -115,6 +121,8 @@ const ProtectedRoutes = () => {
               <Route path="po">
                 <Route index element={<PoList />} />
               </Route>
+
+              <Route path="status"  element={<AccountsStatus/>}/>
             </Route>
           )}
 

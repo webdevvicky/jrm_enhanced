@@ -52,6 +52,20 @@ class Httpservice{
         )
     }
 
+    getByPage<T>(page: number,search:string) {
+        const signal = controller.signal;
+
+        return apiClient.get<T>(this.endpoint, {
+            signal,
+            params: {
+                page,
+                pageSize:10,
+                search
+            }
+        })
+    }
+
+
 
     async get<T>(params?: Record<string, any>) {
         const controller = new AbortController();

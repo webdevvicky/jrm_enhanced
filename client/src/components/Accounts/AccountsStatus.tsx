@@ -1,5 +1,11 @@
+import VendorsStatus from "../Vendors/VendorsStatus";
+
 const AccountsStatus = () => {
-  return <div>AccountsStatus</div>;
+  return (
+    <div>
+      <VendorsStatus />
+    </div>
+  );
 };
 
 export default AccountsStatus;

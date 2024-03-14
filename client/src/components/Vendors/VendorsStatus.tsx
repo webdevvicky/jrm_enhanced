@@ -1,45 +1,46 @@
 import { useQuery } from "@tanstack/react-query";
 import Header from "../Common/Header/Header";
-import quoteApprovelService from "../../services/quote/quoteApprovelService";
 import { AxiosResponse } from "axios";
 import EditButton from "../Common/AuthButtons/EditButton";
 import RejectButton from "../Common/AuthButtons/RejectButton";
 import ApprovelButton from "../Common/AuthButtons/ApprovelButton";
 import DeleteButton from "../Common/AuthButtons/DeleteButton";
 import Loader from "../Common/Loader/Loader";
-import quoteService from "../../services/quote/quoteService";
 import { Link, useNavigate } from "react-router-dom";
 import { FileEarmark } from "react-bootstrap-icons";
+import vendorService from "../../services/vendor/vendorService";
+import vendorApprovelService from "../../services/vendor/vendorApprovelService";
 
-const QuoteStatus = () => {
+const VendorsStatus = () => {
   const navigate = useNavigate();
+
+  const handleReject = (id: string) => {
+    vendorService.update({ _id: id, isRejected: true });
+    refetch();
+  };
+
+  const handleApprove = (id: string) => {
+    vendorService.update({ _id: id, isApproved: true, isRejected: false });
+    refetch();
+  };
+  const handleDelete = (id: string) => {
+    vendorService.delete(id);
+    refetch();
+  };
+
   const {
     isLoading,
     isError,
     refetch,
     data: ApprovelList = [],
   } = useQuery({
-    queryKey: ["QuoteData"],
+    queryKey: [handleReject, handleDelete, handleApprove],
     queryFn: async () => {
-      const res: AxiosResponse<QuoteApprovelListProps[]> =
-        await quoteApprovelService.getall();
-        return res.data;
+      const res: AxiosResponse<VendorApprovelListProps[]> =
+        await vendorApprovelService.getall();
+      return res.data;
     },
   });
-
-  const handleReject = (id: string) => {
-    quoteService.update({ _id: id, isRejected: true });
-    refetch();
-  };
-
-  const handleApprove = (id: string) => {
-    quoteService.update({ _id: id, isApproved: true, isRejected: false });
-    refetch();
-  };
-  const handleDelete = (id: string) => {
-    quoteService.delete(id);
-    refetch();
-  };
 
   if (isLoading) {
     return <Loader />;
@@ -51,16 +52,17 @@ const QuoteStatus = () => {
   return (
     <div className=" container ">
       <div className="row mt-3">
-        <Header lable="Quote Status" />
+        <Header lable="Vendor Status" />
       </div>
       <div className=" table-responsive-md border rounded-4 bg-white p-1">
         <table className=" table text-center table-borderless  ">
           <thead>
             <tr>
               <th>S.No</th>
-              <th>Rev</th>
-              <th>Project Name</th>
-              <th>Type</th>
+              <th>Name</th>
+              <th>Address</th>
+              <th>Items</th>
+              <th>Rate</th>
               <th>View</th>
               <th>Edit</th>
               <th>Reject</th>
@@ -69,20 +71,17 @@ const QuoteStatus = () => {
             </tr>
           </thead>
           <tbody>
-            {ApprovelList.map((quote, index) => (
-              <tr key={quote._id}>
+            {ApprovelList.map((vendor, index) => (
+              <tr key={vendor._id}>
                 <td>{index + 1}</td>
-                <td>{quote.rev}</td>
-                <td>{quote.project ? quote.project.projectName : "null"}</td>
-                <td>
-                  {(quote.isConstruction && "Construction") ||
-                    (quote.isAdditional && "Additional") ||
-                    (quote.isInterior && "Interior")}
-                </td>
+                <td>{vendor.name}</td>
+                <td>{vendor.address}</td>
+                <td>{vendor.items}</td>
+                <td>{vendor.rate}</td>
                 <td>
                   {" "}
                   <Link
-                    to={`/designs/quote/model/${quote._id}`}
+                    to={`/designs/quote/model/${vendor._id}`}
                     state={{ isEdit: true }}
                   >
                     <FileEarmark size={30} className="mx-2" />
@@ -90,26 +89,28 @@ const QuoteStatus = () => {
                 </td>
                 <td>
                   <EditButton
-                    isRejected={quote.isRejected}
-                    onClick={() => navigate(`/designs/quote/edit/${quote._id}`)}
+                    isRejected={vendor.isRejected}
+                    onClick={() =>
+                      navigate(`/designs/quote/edit/${vendor._id}`)
+                    }
                   />
                 </td>
                 <td>
                   <RejectButton
-                    isRejected={quote.isRejected}
-                    onClick={() => handleReject(quote._id)}
+                    isRejected={vendor.isRejected}
+                    onClick={() => handleReject(vendor._id)}
                   />
                 </td>
                 <td>
                   <ApprovelButton
-                    isApproved={quote.isApproved}
-                    onClick={() => handleApprove(quote._id)}
+                    isApproved={vendor.isApproved}
+                    onClick={() => handleApprove(vendor._id)}
                   />
                 </td>
                 <td>
                   <DeleteButton
-                    isApproved={quote.isApproved}
-                    onClick={() => handleDelete(quote._id)}
+                    isApproved={vendor.isApproved}
+                    onClick={() => handleDelete(vendor._id)}
                   />
                 </td>
               </tr>
@@ -121,4 +122,4 @@ const QuoteStatus = () => {
   );
 };
 
-export default QuoteStatus;
+export default VendorsStatus;

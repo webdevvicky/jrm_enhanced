@@ -1,236 +1,173 @@
-import React, { useEffect, useState } from "react";
-import vendorService from "../../services/vendor/vendorService";
+import React, { useState, useEffect } from "react";
 import { AxiosResponse } from "axios";
+import vendorListService from "../../services/vendor/vendorListService";
 import { handleApiError } from "../../utils/apiUtils";
-import NewVendor from "./VendorForm";
-import ConfirmationModal from "../Common/Confirmation/ConfirmationModal";
-import useConfirmation from "../../hooks/useConfirmation";
-const VendorList: React.FC = () => {
-  const [vendors, setVendors] = useState<VendorProps[]>();
-  const [isEdit, setIsEdit] = useState(false);
-  const [selected, setSelected] = useState<VendorProps>();
-  const [viewVendor, setViewVendor] = useState<VendorProps>();
-  const [searchQuery, setSearchQuery] = useState("");
-  const confirmation = useConfirmation();
-  const handleDelete = (vendor: VendorProps) => {
-    vendorService
-      .delete(vendor._id)
-      .then((res) => {
-        window.alert(res.statusText);
-      })
-      .catch((err: any) => {
-        handleApiError(err);
-      });
-    confirmation.hideConfirmation();
-  };
+import { Link, useNavigate } from "react-router-dom";
+import { FileEarmark, PlusCircleDotted } from "react-bootstrap-icons";
+import EditButton from "../Common/AuthButtons/EditButton";
+import Header from "../Common/Header/Header";
+import { tr } from "date-fns/locale";
+
+const VendorsList: React.FC = () => {
+  const [vendors, setVendors] = useState<VendorListProps[]>([]);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const navigate = useNavigate();
 
   useEffect(() => {
-    vendorService
-      .getall<VendorProps[]>()
-      .then((res: AxiosResponse) => {
-        setVendors(res.data);
+    vendorListService
+      .getByPage<VendorListPagiantionProps>(currentPage, searchQuery)
+      .then((res: AxiosResponse<VendorListPagiantionProps>) => {
+        setTotalPages(res.data.totalPages);
+        setCurrentPage(res.data.currentPage);
+        setVendors(res.data.vendors);
       })
       .catch((err: any) => {
         handleApiError(err);
       });
-  }, [handleDelete]);
+  }, [currentPage, searchQuery]); // Fetch data when currentPage or searchQuery changes
 
-  const handleEdit = (vendor: VendorProps) => {
-    setSelected(vendor);
-    setIsEdit(true);
-    confirmation.hideConfirmation();
+  const handlePreviousPage = () => {
+    setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
   };
 
-  const handleView = (vendor: VendorProps) => {
-    setViewVendor(vendor);
+  const handleNextPage = () => {
+    setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages));
   };
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(event.target.value);
+  const handleSearchInputChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setSearchQuery(event.target.value); // Update searchQuery state when input changes
   };
-
-  const filteredVendors = vendors?.filter((vendor) =>
-    vendor.shopName.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   return (
-    <div className="container">
-      {!isEdit && (
-        <div className="row mb-3">
-          <div className="col-md-12">
+    <div className="container-fluid">
+      <Header lable="Vendors List" />
+      {/* Search input */}
+      <div className="container">
+        <div className="row ">
+          <div className="col-md-6 ">
             <input
+              className=" input-group-sm form-control w-50 mb-3"
               type="text"
-              className="form-control"
-              placeholder="Search by Shop Name"
               value={searchQuery}
-              onChange={handleSearchChange}
+              onChange={handleSearchInputChange}
+              placeholder="Search vendors..."
             />
           </div>
+          <div className="col-md-6  text-md-end ">
+            <Link to={"new"}>
+              <PlusCircleDotted size={35} />
+            </Link>
+          </div>
         </div>
-      )}
-      {!isEdit && (
-        <div className="row">
-          <div className="col-md-12">
-            <table className="table table-primary text-center">
-              <thead>
-                <tr>
-                  <th>S.NO</th>
-                  <th>Shop Name</th>
-                  <th>Shop Type</th>
-                  <th>Shop Mobile</th>
-                  <th>Alternate No</th>
-                  <th>View</th>
-                  <th>Edit</th>
-                  <th>Delete</th>
+      </div>
+
+      {/* listing vendors  */}
+      <div className=" table-responsive-md ">
+        <table className="table  table-bordered   text-center table-hover ">
+          <thead>
+            <tr>
+              <th>S.No</th>
+              <th>Name</th>
+              <th>Address</th>
+              <th>Phone No</th>
+              <th>Items</th>
+              <th>Rate</th>
+              {/* <th>Account Details</th> */}
+              <th>Account Number</th>
+              <th>IFSC</th>
+              <th>Branch Name</th>
+
+              <th>Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            {vendors.length >= 1 ? (
+              vendors.map((vendor, index) => (
+                <tr key={vendor._id}>
+                  <td>{index + 1}</td>
+                  <td>{vendor.name}</td>
+                  <td className=" text-truncate ">{vendor.address}</td>
+                  <td>{vendor.mobileNumber}</td>
+                  <td>{vendor.items}</td>
+                  <td>{vendor.rate}</td>
+                  {/* <td>
+                <ul className=" list-group-flush">
+                  <li className=" list-group-item ">
+                    {vendor.accountDetails.accountNumber}
+                  </li>
+                  <li className=" list-group-item ">
+                    {vendor.accountDetails.ifsc}
+                  </li>
+                  <li className=" list-group-item ">
+                    {vendor.accountDetails.branchName}
+                  </li>
+                </ul>
+              </td> */}
+                  <td>{vendor.accountDetails.accountNumber}</td>
+                  <td>{vendor.accountDetails.ifsc}</td>
+                  <td>{vendor.accountDetails.branchName}</td>
+                  <td>
+                    <div className=" d-flex  justify-content-  align-items-center ">
+                      {" "}
+                      <Link to={`view/${vendor._id}`}>
+                        <FileEarmark size={30} />
+                      </Link>
+                      <EditButton
+                        onClick={() => navigate(`edit/${vendor._id}`)}
+                      />
+                    </div>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {filteredVendors?.map((vendor, index) => (
-                  <tr key={vendor._id}>
-                    <td>{index + 1}</td>
-                    <td>{vendor.shopName}</td>
-                    <td>{vendor.shopType}</td>
-                    <td>{vendor.shopMobile}</td>
-                    <td>{vendor.AlternateNumber}</td>
-                    <td>
-                      <button
-                        type="button"
-                        className="btn btn-primary"
-                        data-bs-toggle="modal"
-                        data-bs-target="#exampleModal"
-                        onClick={() => handleView(vendor)}
-                      >
-                        Details
-                      </button>
-                    </td>
-                    <td>
-                      <button
-                        className="btn btn-outline-success"
-                        data-bs-toggle="modal"
-                        data-bs-target="#example"
-                        onClick={() =>
-                          confirmation.showConfirmation(
-                            "Edit Confirmation",
-                            "Are you sure you want to Edit this vendor?",
-                            () => handleEdit(vendor)
-                          )
-                        }
-                      >
-                        Edit
-                      </button>
-                    </td>
-                    <td>
-                      <button
-                        className="btn btn-outline-danger "
-                        onClick={() =>
-                          confirmation.showConfirmation(
-                            "Delete Confirmation",
-                            "Are you sure you want to delete this Vendor?",
-                            () => handleDelete(vendor)
-                          )
-                        }
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
+              ))
+            ) : (
+              <tr>
+                <td colSpan={10}> No Vendors To Show</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
 
-      {isEdit && <NewVendor vendor={selected} isEdit />}
+      {/* Pagination */}
 
-      {viewVendor && (
-        <div className="row">
-          <div
-            className="modal fade"
-            id="exampleModal"
-            tabIndex={-1}
-            aria-labelledby="exampleModalLabel"
-            aria-hidden="true"
+      <nav aria-label="Page navigation example">
+        <ul className="pagination">
+          <li className={`page-item ${currentPage === 1 && "disabled"}`}>
+            <span
+              className="page-link cursor-pointer"
+              onClick={handlePreviousPage}
+            >
+              Previous
+            </span>
+          </li>
+          {Array.from({ length: totalPages }, (_, index) => (
+            <li
+              key={index}
+              className={`page-item ${currentPage === index + 1 && "active"}`}
+            >
+              <span
+                className="page-link cursor-pointer"
+                onClick={() => setCurrentPage(index + 1)}
+              >
+                {index + 1}
+              </span>
+            </li>
+          ))}
+          <li
+            className={`page-item ${currentPage === totalPages && "disabled"}`}
           >
-            <div className="modal-dialog">
-              <div className="modal-content">
-                <div className="modal-header">
-                  <h5 className="modal-title" id="exampleModalLabel">
-                    {viewVendor?.shopName}
-                  </h5>
-                </div>
-                <div className="modal-body">
-                  {" "}
-                  <p>
-                    <span className="fw-bold">Shop Name:</span>{" "}
-                    {viewVendor?.shopName || "---"}
-                  </p>
-                  <p>
-                    <span className="fw-bold">Shop Type:</span>{" "}
-                    {viewVendor?.shopType || "---"}
-                  </p>
-                  <p>
-                    <span className="fw-bold">Materials Available:</span>{" "}
-                    {viewVendor?.meterialsAvailable || "---"}
-                  </p>
-                  <p>
-                    <span className="fw-bold">Shop Mobile:</span>{" "}
-                    {viewVendor?.shopMobile || "---"}
-                  </p>
-                  <p>
-                    <span className="fw-bold">Shop Landline:</span>{" "}
-                    {viewVendor?.shopLandLine || "---"}
-                  </p>
-                  <p>
-                    <span className="fw-bold">Alternate Number:</span>{" "}
-                    {viewVendor?.AlternateNumber || "---"}
-                  </p>
-                  <p>
-                    <span className="fw-bold">Sales Person Name:</span>{" "}
-                    {viewVendor?.salesPersonName || "---"}
-                  </p>
-                  <p>
-                    <span className="fw-bold">Sales Person Mobile:</span>{" "}
-                    {viewVendor?.salesPersonMobile || "---"}
-                  </p>
-                  <p>
-                    <span className="fw-bold">Account Number:</span>{" "}
-                    {viewVendor?.accountNumber || "---"}
-                  </p>
-                  <p>
-                    <span className="fw-bold">IFSC:</span>{" "}
-                    {viewVendor?.ifsc || "---"}
-                  </p>
-                  <p>
-                    <span className="fw-bold">G Pay:</span>{" "}
-                    {viewVendor?.gpay || "---"}
-                  </p>
-                </div>
-
-                <div className="modal-footer">
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    data-bs-dismiss="modal"
-                  >
-                    Close
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <ConfirmationModal
-        show={confirmation.show}
-        handleClose={confirmation.hideConfirmation}
-        handleConfirm={confirmation.onConfirm}
-        title={confirmation.title}
-        message={confirmation.message}
-      />
+            <span className="page-link cursor-pointer" onClick={handleNextPage}>
+              Next
+            </span>
+          </li>
+        </ul>
+      </nav>
     </div>
   );
 };
 
-export default VendorList;
+export default VendorsList;
