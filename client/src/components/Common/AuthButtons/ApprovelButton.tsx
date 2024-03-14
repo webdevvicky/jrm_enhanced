@@ -10,7 +10,7 @@ import {
 interface AdminBtnProps {
   onClick?: () => void;
   label?: string;
-  isApproved: boolean;
+  isApproved?: boolean;
 }
 
 const ApprovelButton: React.FC<AdminBtnProps> = ({

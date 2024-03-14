@@ -13,7 +13,7 @@ interface IsEdit {
 interface ContractorProps extends NewContractor {
   _id: string;
 }
-const NewContractor = ({ isEdit, data }: IsEdit) => {
+const ContractorForm = ({ isEdit, data }: IsEdit) => {
   // const [contractor, setContractor] = useState<ContractorProps | null>(
   //   data ?? null
   // );
@@ -130,4 +130,4 @@ const NewContractor = ({ isEdit, data }: IsEdit) => {
   );
 };
 
-export default NewContractor;
+export default ContractorForm;

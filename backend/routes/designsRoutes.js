@@ -22,11 +22,11 @@ const upload = multer({ storage: storage });
 
 router.post('/', upload.single('designFile'), async (req, res) => {
   try {
-    const { fileName,projectId } = req.body;
+    const { fileName,project } = req.body;
    
     const filePath = `/uploads/designs/${req.file.filename}`;
    
-    const design = new Design({ fileName, designFile: filePath,projectId });
+    const design = new Design({ fileName, designFile: filePath,project });
     await design.save();
 
     res.status(201).send(design);
@@ -84,7 +84,7 @@ res.status(500).send({error:"server error"})
 
 router.get('/project/:id', async (req,res)=>{
   try{
-    const designsList = await Design.find({"projectId":req.params.id})
+    const designsList = await Design.find({"project":req.params.id,"isApproved":true}).populate('project')
 
     if(!designsList){
       return res.send("No files Found")
@@ -95,6 +95,33 @@ router.get('/project/:id', async (req,res)=>{
   }
 })
 
+
+router.get('/approvel/all',async (req,res)=>{
+  try{
+
+    const ApprovelList = await Design.find({isApproved:false}).populate('project' ,'projectName')
+
+    res.status(200).send(ApprovelList)
+
+
+  }catch(error){
+    res.status(500).send(error.message || 'Internal Server Error');
+  }
+})
+
+router.patch('/:id', async (req,res)=>{
+  try{
+    const updateFile = await Design.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
+    
+    if (!updateFile) {
+      return res.status(404).send();
+    }
+    res.send(updateFile);
+  
+  }catch(error){
+    res.status(500).send(error.message || 'Internal Server Error');
+  }
+})
 
 
 // DELETE route for deleting a file

@@ -3,7 +3,10 @@ const mongoose = require('mongoose');
 const designSchema = new mongoose.Schema({
   fileName: String,
   designFile: String,
-  projectId: String,
+  project: {type: mongoose.Schema.Types.ObjectId,
+    ref:'Project'},
+  isApproved:{type:Boolean, default:false},
+
 }, {
   timestamps: true,
 });

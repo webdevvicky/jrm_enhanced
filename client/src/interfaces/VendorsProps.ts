@@ -1,19 +1,24 @@
 
-interface NewVendorProps{
-    shopName:string,
-    shopType:string,
-    shopAddress:string,
-    meterialsAvailable:string,
-    shopMobile:number,
-    shopLandLine:number,
-    AlternateNumber:number,
-    salesPersonName:string,
-    salesPersonMobile:number,
+interface VendorFormProps{
+    name:string,
+    address:string,
+    gst:string,
     accountNumber:number,
+    branchName:string
     ifsc:string,
     gpay:number,
+    items:string,
+    rate:string
+    mobileNumber:number,
+    landlineNumber:number,
+    alternateNumber:number,
+    salesPersonName:string,
+    salesPersonMobile:number,
+    ownerName:string,
+    ownerNumber:number
+    
 }
 
-interface VendorProps extends NewVendorProps{
+interface VendorProps extends VendorFormProps{
     _id:string
 }

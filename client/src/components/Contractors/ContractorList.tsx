@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import contractService from "../../services/contractor/contractService";
 import { AxiosResponse } from "axios";
 import { handleApiError } from "../../utils/apiUtils";
-import NewContractor from "./NewContractor";
+import NewContractor from "./ContractorForm";
 
 const ContractorList = () => {
   const [contractors, setContractors] = useState<ContractorProps[]>();

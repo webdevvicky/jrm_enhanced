@@ -31,7 +31,7 @@ interface QuoteModelProps{
     isInterior:boolean;
     isRevised:boolean;
     items: QuoteItemProps[];
-    projectId: {
+    project: {
         _id: string;
         name: string;
         email:string,
@@ -43,17 +43,22 @@ interface QuoteModelProps{
     rev: number;
     status: boolean; 
     totalValue: number;
+      
     __v: number;
 }
 
-interface QuoteListProps{
+interface QuoteApprovelListProps{
   _id:string,
   isConstruction:boolean,
   isRevised:boolean,
   isInterior:boolean,
   isAdditional:boolean,
+  isRejected:boolean,
+  isApproved:boolean
   rev:number,
-
-
+  project:{
+    name:string,
+    projectName:string
+  }
 }
 

@@ -1,7 +1,7 @@
 import InputComponent from "../Common/FormComponents/InputComponent";
 import SubmitComponent from "../Common/FormComponents/SumitComponent";
 import { useForm } from "react-hook-form";
-import axios, { AxiosResponse } from "axios";
+import  { AxiosResponse } from "axios";
 import Header from "../Common/Header/Header";
 import { useLocation, useNavigate } from "react-router-dom";
 import { fileUploadApiClient } from "../../services/api-Client";
@@ -10,7 +10,8 @@ import { handleApiError } from "../../utils/apiUtils";
 interface DesignProps {
   fileName: string;
   designFile: File;
-  projectId: string;
+  project: string;
+  
 }
 
 const DesignsUpload = () => {
@@ -25,7 +26,7 @@ const DesignsUpload = () => {
   const HandleUpload = async (data: any) => {
     try {
       const formData = new FormData();
-      formData.append("projectId", projectId);
+      formData.append("project", projectId);
       formData.append("fileName", data.fileName);
       formData.append("designFile", data.designFile[0]);
       const response = await fileUploadApiClient

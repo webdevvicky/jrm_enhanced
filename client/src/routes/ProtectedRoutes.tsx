@@ -26,6 +26,12 @@ import Projectstatus from "../components/Projects/Projectstatus";
 import ProjectInfo from "../components/Projects/ProjectInfo";
 import QuoteForm from "../components/Quotes/QuoteForm";
 import QuoteModel from "../components/Quotes/QuoteModel";
+import GstPage from "../components/Gst/GstPage";
+import GstForm from "../components/Gst/GstForm";
+import VendorForm from "../components/Vendors/VendorForm";
+import ContractorForm from "../components/Contractors/ContractorForm";
+import PoList from "../components/PurchaseOrders/PoList";
+import AccountsHome from "../components/Accounts/AccountsHome";
 
 const ProtectedRoutes = () => {
   const isAdmin = getUserRole() === "admin";
@@ -83,6 +89,31 @@ const ProtectedRoutes = () => {
                 <Route path="new" element={<QuoteForm />} />
                 <Route path="edit/:id" element={<QuoteForm />} />
                 <Route path="model/:id" element={<QuoteModel />} />
+              </Route>
+            </Route>
+          )}
+
+          {(allowedRoutes.includes("accounts") || isAdmin) && (
+            <Route path="/accounts"> 
+            <Route  index element={<AccountsHome/>}/>
+              <Route path="gst">
+                <Route index element={<GstPage />} />
+                <Route path="new" element={<GstForm />} />
+                <Route path="edit/:id" element={<GstForm />} />
+              </Route>
+
+              <Route path="vendor">
+                <Route index element={<VendorList />} />
+                <Route path="new" element={<VendorForm />} />
+                <Route path="edit/:id" element={<VendorForm />} />
+              </Route>
+              <Route path="contractor">
+                <Route index element={<ContractorList />} />
+                <Route path="new" element={<ContractorForm />} />
+                <Route path="edit/:id" element={<ContractorForm />} />
+              </Route>
+              <Route path="po">
+                <Route index element={<PoList />} />
               </Route>
             </Route>
           )}

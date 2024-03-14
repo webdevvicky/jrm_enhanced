@@ -9,14 +9,14 @@ import { handleApiError } from "../../utils/apiUtils";
 import EditButton from "../Common/AuthButtons/EditButton";
 import quoteService from "../../services/quote/quoteService";
 
-
 const QuoteForm = () => {
   const { id } = useParams();
+  const isEdit = !!id;
+  console.log(isEdit);
   const navigate = useNavigate();
   const { state } = useLocation();
   const [totalValue, setTotalValue] = useState(0);
   const [editQuoate, setEditQuote] = useState<QuoteModelProps>();
-  console.log(state);
   const { register, control, handleSubmit, watch, reset } =
     useForm<NewQuoteProps>();
 
@@ -40,71 +40,74 @@ const QuoteForm = () => {
   ];
 
   useEffect(() => {
-    if (state._id) {
-      quoteService
-        .getById<QuoteModelProps>(state._id)
-        .then((res: AxiosResponse) => {
-          reset(res.data);
-          setEditQuote(res.data);
-        });
+    if (id) {
+      quoteService.getById<QuoteModelProps>(id).then((res: AxiosResponse) => {
+        reset(res.data);
+        setEditQuote(res.data);
+      });
     }
-  }, [state.isEdit]);
+  }, [id]);
 
   const handleTotalChange = (total: string) => {
     setTotalValue(parseFloat(total));
   };
 
   const handleFormSubmit = (data: NewQuoteProps) => {
-    const UpdatedData: NewQuoteProps = {
-      ...data,
-      totalValue: totalValue,
-      isConstruction: state.construction,
-      isAdditional: state.additional,
-      isInterior: state.interior,
-      project: state.projectId,
-    };
-
-    if (state._id) {
+    if (isEdit) {
       const updatedDataWithId = {
-        ...UpdatedData,
-        _id: state._id,
+        ...data,
+        _id: id,
         isRejected: false,
       };
       quoteService
         .update(updatedDataWithId)
         .then((res: AxiosResponse) => {
-          navigate(`/marketting/quote/model/${res.data._id}`);
+          navigate(`/designs/quote/model/${res.data._id}`);
         })
         .catch((err: any) => {
           handleApiError(err);
         });
+      console.log("postinfg");
     } else {
+      const UpdatedData: NewQuoteProps = {
+        ...data,
+        totalValue: totalValue,
+        isConstruction: state.construction,
+        isAdditional: state.additional,
+        isInterior: state.interior,
+        project: state.projectId,
+      };
+
       quoteService
         .create(UpdatedData)
         .then((res: AxiosResponse) => {
-          navigate(`/marketting/quote/model/${res.data._id}`);
+          navigate(`/designs/quote/model/${res.data._id}`);
         })
         .catch((err) => {
           handleApiError(err);
         });
+
+      console.log("first");
     }
   };
 
   return (
     <div className=" container">
-      <div className="row">
-        <div className="col-md-6">Site Name -- {state.projectName}</div>
-        <div className="col-md-6">
-          QuoteType --{" "}
-          {state.additional
-            ? "Adiitonal"
-            : state.construction
-            ? "Construction "
-            : state.interior
-            ? "Interior"
-            : ""}
+      {state && (
+        <div className="row">
+          <div className="col-md-6">Site Name -- {state.projectName}</div>
+          <div className="col-md-6">
+            QuoteType --{" "}
+            {state.additional
+              ? "Adiitonal"
+              : state.construction
+              ? "Construction "
+              : state.interior
+              ? "Interior"
+              : ""}
+          </div>
         </div>
-      </div>
+      )}
       <form onSubmit={handleSubmit(handleFormSubmit)}>
         <ArrayInput
           register={register}
@@ -116,8 +119,13 @@ const QuoteForm = () => {
           watch={watch}
         />
         {/* <SubmitComponent btnlable={state.isEdit ? "Edit Quote" : "New Quote"} /> */}
-        {state.isEdit ? (
-          <EditButton isRejected={editQuoate?.isRejected || false} />
+        {id ? (
+          <span className="   border  text-white ">
+            <EditButton
+              isRejected={editQuoate?.isRejected || false}
+              label="Edit"
+            />
+          </span>
         ) : (
           <SubmitComponent btnlable="New Quote" />
         )}

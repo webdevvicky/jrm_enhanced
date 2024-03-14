@@ -10,6 +10,8 @@ import ApprovelButton from "../Common/AuthButtons/ApprovelButton";
 import DeleteButton from "../Common/AuthButtons/DeleteButton";
 import projectService from "../../services/project/projectService";
 import { FileEarmark } from "react-bootstrap-icons";
+import QuoteStatus from "../Quotes/QuoteStatus";
+import DesignStatus from "../Designs/DesignStatus";
 
 const Projectstatus = () => {
   const navigate = useNavigate();
@@ -66,6 +68,7 @@ const Projectstatus = () => {
   }
 
   return (
+   <>
     <div className=" container ">
       <div>
         <Header lable=" Project Booking  Status" />
@@ -136,7 +139,12 @@ const Projectstatus = () => {
           </tbody>
         </table>
       </div>
+      
     </div>
+    
+    <QuoteStatus/>
+    <DesignStatus/>
+    </>
   );
 };
 

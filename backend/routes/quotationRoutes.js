@@ -94,7 +94,7 @@ router.get('/project/:projectId', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
   try {
-    const quote = await Quote.findById(req.params.id).populate('project', 'projectName name email mobileNumber location fileNumber');
+    const quote = await Quote.findById(req.params.id).populate('project', 'projectName name email mobileNumber projectLocation fileNumber');
     res.json(quote);
   } catch (err) {
     res.status(500).json({ error: 'Internal Server Error' });
@@ -104,13 +104,20 @@ router.get('/:id', async (req, res) => {
 // More general route for fetching all quotes needing approval
 router.get('/approvel/all', async (req, res) => {
   try {
-    const quotations = await Quote.find({ isApproved: false })
+    const quotes = await Quote.find({ isApproved: false })
+      .select('project rev isApproved isRejected isAdditional isConstruction isInterior')
       .populate('project', 'projectName name _id')
       .exec();
-    res.status(200).json(quotations);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Internal Server Error' });
+
+    // if (quotes.length === 0) {
+    //   // Set status and headers before sending the response
+    //   return res.status(404).json({ error: "No Quote Found For Approvel" });
+    // }
+
+    res.status(200).json(quotes);
+  } catch (error) {
+    console.error(error); // Log the actual error for debugging
+    res.status(500).json({ error: 'An error occurred' });
   }
 });
 

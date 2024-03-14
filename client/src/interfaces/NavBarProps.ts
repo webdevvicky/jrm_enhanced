@@ -5,7 +5,8 @@ interface Subcategory {
 
 interface NavItem {
   to: string;
-  subcategories: Subcategory[];
+  label?:string
+  subcategories?: Subcategory[];
 }
 
 interface NavBarProps {

@@ -12,7 +12,6 @@ interface selected {
 }
 const QuoationList = ({ selectedProject }: selected) => {
   const [quoteList, setQuoteList] = useState<QuoteListProps[]>([]);
-  console.log(selectedProject._id);
   useEffect(() => {
     quoteUsingProject
       .getById(selectedProject._id)
@@ -71,7 +70,7 @@ const QuoationList = ({ selectedProject }: selected) => {
       <div className=" container  bg-white  border rounded-3 my-3 py-2">
         <div className="row">
           <div className="col-md-6 pt-1">
-            <h5>Construction Quote</h5>
+            <h5>Additional Quote</h5>
           </div>
           <div className="col-md-6 text-end">
             <Link
@@ -79,7 +78,7 @@ const QuoationList = ({ selectedProject }: selected) => {
               state={{
                 projectId: selectedProject?._id,
                 projectName: selectedProject?.projectName,
-              additional:true
+                additional: true,
               }}
             >
               <PlusSquareDotted size={30} className="me-4 my-1" />
@@ -87,7 +86,7 @@ const QuoationList = ({ selectedProject }: selected) => {
           </div>
         </div>
         <div className="row ">
-          {constructionQuotes.map((quote) => (
+          {additionalQuotes.map((quote) => (
             <div className=" col-md-2 ">
               <div className="card text-center">
                 <div className=" card-img-top ">
@@ -109,7 +108,7 @@ const QuoationList = ({ selectedProject }: selected) => {
       <div className=" container  bg-white  border rounded-3 py-2">
         <div className="row">
           <div className="col-md-6 pt-1">
-            <h5>Construction Quote</h5>
+            <h5>Interior Quote</h5>
           </div>
           <div className="col-md-6 text-end">
             <Link
@@ -117,7 +116,7 @@ const QuoationList = ({ selectedProject }: selected) => {
               state={{
                 projectId: selectedProject?._id,
                 projectName: selectedProject?.projectName,
-               interior:true
+                interior: true,
               }}
             >
               <PlusSquareDotted size={30} className="me-4 my-1" />
@@ -125,7 +124,7 @@ const QuoationList = ({ selectedProject }: selected) => {
           </div>
         </div>
         <div className="row ">
-          {constructionQuotes.map((quote) => (
+          {interiorQuotes.map((quote) => (
             <div className=" col-md-2">
               <div className="card text-center">
                 <div className=" card-img-top ">

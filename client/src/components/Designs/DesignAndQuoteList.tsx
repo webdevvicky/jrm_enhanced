@@ -8,7 +8,9 @@ import { handleApiError } from "../../utils/apiUtils";
 import designUsingProjectService from "../../services/designs/designUsingProjectService";
 import DeleteButton from "../Common/AuthButtons/DeleteButton";
 
-import QuoationList from "./QuoationList";
+import QuoationList from "../Quotes/QuoationList";
+import designService from "../../services/designs/designService";
+import { isAdmin } from "../../utils/auth";
 interface DesignProps {
   fileName: string;
   designFile: string;
@@ -23,6 +25,11 @@ const DesignAndQuoteList = () => {
     _id: "",
   });
 
+
+  const handleDeleteDesign = (id: string) => {
+    designService.delete(id);
+  };
+  
   useEffect(() => {
     if (selectedProject?._id) {
       designUsingProjectService
@@ -32,15 +39,13 @@ const DesignAndQuoteList = () => {
         })
         .catch((err: any) => handleApiError(err));
     }
-  }, [selectedProject]);
+  }, [selectedProject,handleDeleteDesign]);
 
   const handleChangeProject = (project: ProjectOption) => {
     setSelectedProject(project);
   };
 
-  const handleDeleteDesign = () => {
-    console.log("first");
-  };
+ 
   return (
     <div className="container ">
       <div className="row  bg-white  py-1 bg-body-secondary justify-content-center  d-flex align-items-center ">
@@ -97,7 +102,11 @@ const DesignAndQuoteList = () => {
                           {design.fileName}
                         </div>
                       </Link>
-                      <DeleteButton onClick={() => handleDeleteDesign()} />
+                      {isAdmin() && (
+                        <DeleteButton
+                          onClick={() => handleDeleteDesign(design._id)}
+                        />
+                      )}
                     </div>
                   </div>
                 </div>

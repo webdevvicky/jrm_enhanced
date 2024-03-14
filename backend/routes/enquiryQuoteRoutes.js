@@ -139,7 +139,7 @@ const EnquiryQuotation = require('../models/EnquiryQuoteSchema')
   
     try {
 
-      const edited = !!req.body.items; // Use the double negation to convert to a boolean
+      const edited = !!req.body.items; // Using double negation to convert to a boolean
       req.body.isRejected = !edited;
       const enquiryQuotation = await EnquiryQuotation.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
       if (!enquiryQuotation) {

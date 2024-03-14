@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import vendorService from "../../services/vendor/vendorService";
 import { AxiosResponse } from "axios";
 import { handleApiError } from "../../utils/apiUtils";
-import NewVendor from "./NewVendorForm";
+import NewVendor from "./VendorForm";
 import ConfirmationModal from "../Common/Confirmation/ConfirmationModal";
 import useConfirmation from "../../hooks/useConfirmation";
 const VendorList: React.FC = () => {
@@ -141,8 +141,7 @@ const VendorList: React.FC = () => {
         </div>
       )}
 
-     
-        {isEdit && <NewVendor vendor={selected} isEdit />}
+      {isEdit && <NewVendor vendor={selected} isEdit />}
 
       {viewVendor && (
         <div className="row">

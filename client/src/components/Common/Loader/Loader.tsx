@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 
-const Loader = () => {
-  const [showError, setShowError] = useState(false);
+interface LoaderProps{
+  isError?:boolean
+}
+const Loader = ({isError}:LoaderProps) => {
+  const [showError, setShowError] = useState(false || isError);
 
   useEffect(() => {
     // Set a timeout to show the error after 15 seconds

@@ -50,20 +50,20 @@ const QuoteModel = () => {
                 <td colSpan={3}>
                   <span className=" pe-md-5 ">
                     {" "}
-                    <b>NAME :</b> {quote?.projectId.name}
+                    <b>NAME :</b> {quote?.project.name}
                   </span>{" "}
                   <span className="ms-md-5 ">
-                    <b>SITE LOCATION :</b> {quote?.projectId.projectLocation}
+                    <b>SITE LOCATION :</b> {quote?.project.projectLocation}
                   </span>
                 </td>
 
                 <td colSpan={3}>
-                  <b>FILE NO :</b> #{quote?.projectId.fileNumber}
+                  <b>FILE NO :</b> #{quote?.project.fileNumber}
                 </td>
               </tr>
               <tr className=" border-bottom-0  border-top-0 ">
                 <td colSpan={3}>
-                  <b>EMAIL ID :</b> {quote?.projectId.email}
+                  <b>EMAIL ID :</b> {quote?.project.email}
                 </td>
                 <td colSpan={3}>
                   <b>DATE :</b>{" "}
@@ -73,7 +73,7 @@ const QuoteModel = () => {
               <tr className=" border-bottom-0  border-top-0 ">
                 <td colSpan={3}>
                   <b>CONTACT NO : </b>
-                  {quote?.projectId.mobileNumber}
+                  {quote?.project.mobileNumber}
                 </td>
                 <td colSpan={3}>
                   <b>REV :</b> {quote.rev}
