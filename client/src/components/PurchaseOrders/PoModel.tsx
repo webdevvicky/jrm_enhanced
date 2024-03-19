@@ -1,29 +1,37 @@
-import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import poService from "../../services/po/poService";
-import { AxiosResponse } from "axios";
+
 import { format } from "date-fns";
+import poService from "../../services/po/poService";
+import { useQuery } from "@tanstack/react-query";
+import { AxiosResponse } from "axios";
 import Loader from "../Common/Loader/Loader";
 
 const PoModel = () => {
   const { id } = useParams();
-  const [po, setPo] = useState<PoModelProps>();
 
-  useEffect(() => {
-    poService
-      .getById<PoModelProps>(`${id}`)
-      .then((res: AxiosResponse) => {
-        setPo(res.data);
-      })
-      .catch((err: any) => {
-        console.log(err);
-      });
-  }, []);
+  const {
+    isLoading,
+    isError,
+    data: po,
+  } = useQuery({
+    queryKey: ["unApprovedPoList", "unVerifiPoList"],
+    queryFn: async () => {
+      const res: AxiosResponse<PoModelProps> = await poService.getById(`${id}`);
+      return res.data;
+    },
+  });
+
+  if (isLoading) {
+    return <Loader />;
+  }
+  if (isError) {
+    return <Loader isError />;
+  }
   return (
     <>
-      {po ? (
+      {po? (
         <div className=" container printmodel">
-          <table className=" table  table-bordered ">
+          <table className=" table  table-bordered  ">
             <thead>
               <tr>
                 <th
@@ -44,10 +52,10 @@ const PoModel = () => {
                 </th>
               </tr>
             </thead>
-            <tbody>
+            <tbody key={po._id}>
               <tr>
                 <th scope="row">SITE NAME</th>
-                <td colSpan={6}>{po?.siteName}</td>
+                <td colSpan={6}>{po?.project?.projectName}</td>
               </tr>
               <tr>
                 <th scope="row">STAGE</th>
@@ -55,11 +63,11 @@ const PoModel = () => {
               </tr>
               <tr>
                 <th scope="row">METERIAL CATAGERY</th>
-                <td colSpan={6}>{po?.meterialCatagory}</td>
+                <td colSpan={6}>{po?.meterialCategory}</td>
               </tr>
               <tr>
                 <th scope="row">SUPPLIER</th>
-                <td colSpan={6}>{po?.supplier}</td>
+                <td colSpan={6}>{po?.vendor?.name}</td>
               </tr>
               <tr>
                 <th>S.NO</th>
@@ -73,60 +81,67 @@ const PoModel = () => {
               {po?.items.map((item, index) => (
                 <tr key={item.id}>
                   <td>{index + 1}</td>
-                  <td>{item.description}</td>
+                  <td>{item.item}</td>
                   <td>{item.meterialFor}</td>
-                  <td>{item.quantity}</td>
+                  <td>{item.qty}</td>
                   <td>{item.unit}</td>
                   <td>{item.rate}</td>
-                  <td>{item.quantity * item.rate}</td>
+                  <td>{(item.qty * item.rate).toFixed(2)}</td>
                 </tr>
               ))}
               <tr>
                 <td colSpan={6} className=" text-end ">
                   sub total
                 </td>
-                <td>{po?.subTotal}</td>
+                <td>{po?.subTotal.toFixed(2)}</td>
               </tr>
               <tr>
                 <td colSpan={6} className=" text-end ">
                   CGST {po?.cgst}%
                 </td>
-                <td>{(po.cgst * po.subTotal) / 100}</td>
+                <td>{((po.cgst * po.subTotal) / 100).toFixed(2)}</td>
               </tr>
               <tr>
                 <td colSpan={6} className=" text-end ">
                   SGST{po?.sgst}%
                 </td>
-                <td>{(po.sgst * po.subTotal) / 100}</td>
+                <td>{((po.sgst * po.subTotal) / 100).toFixed(2)}</td>
+              </tr>
+              <tr>
+                <td colSpan={6} className=" text-end ">
+                  IGST{po?.igst}%
+                </td>
+                <td>{((po.igst * po.subTotal) / 100).toFixed(2)}</td>
               </tr>
               <tr>
                 <th colSpan={6} className=" text-end bg-info-subtle  ">
                   Total Amount
                 </th>
-                <td className=" bg-info-subtle ">
-                  {po?.totalAmount.toFixed()}
-                </td>
+                <td className=" bg-info-subtle ">{po?.totalAmount}</td>
               </tr>
               <tr className=" text-center ">
                 <td colSpan={7} className="pt-3 ">
-                  <div className="d-flex  justify-content-between align-items-end ">
+                  <div className="d-flex  justify-content-around mt-4 align-items-end ">
+                    <div>
+                      <p className="fw-bold p-0 m-0"> {po.createdBy.name}</p>
+                      <span>PREPARED BY</span>
+                    </div>
                     <div>
                       <p className="fw-bold p-0 m-0">
-                        {" "}
-                        {po?.isVerified ? (
-                          po.verifiedBy
+                        {po.isVerified ? (
+                          po.verifiedBy.name
                         ) : (
-                          <span className=" text-danger"> Not Verified</span>
-                        )}
+                          <span className=" text-danger ">Not Verified</span>
+                        )}{" "}
                       </p>
                       <span>VERIFIED BY</span>
                     </div>
                     <div>
                       <p className="fw-bold p-0 m-0">
-                        {po?.isApproved ? (
-                          po.approvedBy
+                        {po.isApproved ? (
+                          po.approvedBy?.name
                         ) : (
-                          <span className=" text-danger"> Not Approved</span>
+                          <span className=" text-danger ">Not Approved</span>
                         )}
                       </p>
                       <span>APPROVED BY</span>

@@ -13,9 +13,15 @@ const EditButton: React.FC<EditButtonProps> = ({
   label,
   isRejected,
 }) => {
+  const confirm = () => {
+    const confirm = window.confirm("Are you sure want to Edit this");
+    if (confirm) {
+      return onClick ? onClick() : null;
+    }
+  };
   return (
     <button
-      onClick={onClick}
+      onClick={confirm}
       //className={`btn  text-success border-0   w-100 `}
       className={
         label

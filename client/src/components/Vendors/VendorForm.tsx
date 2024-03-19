@@ -7,7 +7,7 @@ import SubmitComponent from "../Common/FormComponents/SumitComponent";
 import vendorService from "../../services/vendor/vendorService";
 import Header from "../Common/Header/Header";
 import EditButton from "../Common/AuthButtons/EditButton";
-import { useQuery } from "@tanstack/react-query";
+
 import { AxiosResponse } from "axios";
 import { useEffect } from "react";
 
@@ -42,20 +42,28 @@ const VendorForm = () => {
 
   useEffect(() => {
     if (isEditMode) {
-      vendorService.getById(id).then((res: AxiosResponse) => reset(res.data));
+      vendorService
+        .getById<VendorFormProps>(id)
+        .then((res: AxiosResponse) => reset(res.data));
     }
   }, [id]);
 
   const handleVendorForm = (vendor: VendorFormProps) => {
     if (isEditMode) {
-      const updatedData = { _id: id, ...vendor };
+      const updatedData = { _id: id, ...vendor, isRejected: false, };
+      console.log(updatedData);
       vendorService
         .update(updatedData)
-        .then((res: AxiosResponse) => console.log(res.data));
+        .then((res: AxiosResponse<VendorProps>) =>
+          navigate(`/accounts/vendor/view/${res.data._id}`)
+        )
+        .catch((err: any) => handleApiError(err));
     } else {
       vendorService
         .create(vendor)
-        .then((res) => console.log(res.data))
+        .then((res: AxiosResponse<VendorProps>) =>
+          navigate(`/accounts/vendor/view/${res.data._id}`)
+        )
         .catch((err: any) => handleApiError(err));
     }
   };

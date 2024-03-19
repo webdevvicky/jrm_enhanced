@@ -1,38 +1,42 @@
 const mongoose = require('mongoose');
 
 const poSchema = new mongoose.Schema({
-  projectId:{ type: mongoose.Schema.Types.ObjectId, ref: 'Customer'},
+    project:{ type: mongoose.Schema.Types.ObjectId, ref: 'Project'},
     date: { type: Date, default: Date.now },
     poNumber: { type: Number, required: true  },
     stage:{type:String,required:true ,lowercase: true},
-    meterialCatagory:{type:String,required:true},
-    vendorId:{ type: mongoose.Schema.Types.ObjectId, ref: 'Vendor'},
+    meterialCategory:{type:String,required:true},
+    vendor:{ type: mongoose.Schema.Types.ObjectId, ref: 'Vendor'},
     subTotal: { type: Number, required: true  },
     sgst: { type: Number, required: true  },
     cgst: { type: Number, required: true  },
+    igst: { type: Number, required: true  },
     totalAmount: { type: Number, required: true  },
     isApproved:{type:Boolean, default:false},
-    approvedId:{
+    approvedBy:{
       type: mongoose.Schema.Types.ObjectId, ref: 'User'
     },
     isVerified:{type:Boolean, default:false},
-    verifiedId:{
+    verifiedBy:{
         type: mongoose.Schema.Types.ObjectId, ref: 'User'
       },
-      created:{
+      createdBy:{
         type: mongoose.Schema.Types.ObjectId, ref: 'User'
       },
+      isRejected:{type:Boolean,default:false},
     status:{type:Boolean, default:true},
   items: [
     {
-      id: Number,
-      description: String,
+      item: String,
       meterialFor: String,
-      quantity: Number,
+      qty: Number,
       unit: String,
       rate: Number,
     },
   ],
+
+  vouchers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Voucher' }],
+  isPendingPayment:{type:Boolean, default:false}
 });
 
 const PurchaseOrder = mongoose.model('PurchaseOrder', poSchema);

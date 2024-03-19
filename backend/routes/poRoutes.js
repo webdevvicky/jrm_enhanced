@@ -1,7 +1,9 @@
 const express = require('express');
 const PurchaseOrder = require('../models/PoSchema');
 const router = express.Router();
-const Customer = require('../models/CustomerSchema')
+const Customer = require('../models/CustomerSchema');
+const setVerifiedByField = require('../middlewares/setVerifiedByField');
+const setApprovedByField = require ('../middlewares/setApprovedByField')
 
 
 // new po
@@ -9,7 +11,7 @@ const Customer = require('../models/CustomerSchema')
 router.post("/", async (req, res) => {
   try {
     // Check if the specified stage already exists
-    const existingPo = await PurchaseOrder.findOne({projectId:req.body.projectId, stage: req.body.stage.toLowerCase() });
+    const existingPo = await PurchaseOrder.findOne({project:req.body.project, stage: req.body.stage.toLowerCase() });
 
     if (existingPo) {
       // Return an error response if the stage is not unique
@@ -40,6 +42,70 @@ router.post("/", async (req, res) => {
 
 
 
+
+// get pending payment po
+
+router.get('/pendingpayment',async (req,res)=>{
+  try{
+      const pendingPaymentPos = await PurchaseOrder.find({isPendingPayment:false}).populate('vendor','name')
+  res.send(pendingPaymentPos)
+  
+    }catch(error){
+    res.status(500).json({ error: error.message });
+  }
+})
+
+
+
+//get verify po list 
+
+router.get('/verify',async (req,res)=>{
+  try{
+  const unApprovedPos = await PurchaseOrder.find({isVerified:false}).populate('project','name').select('project poNumber stage isApproved isVerified isRejected')
+
+res.send(unApprovedPos)
+
+  }catch(error){
+    res.status(500).json({ error: error.message });
+  }
+})
+
+//get Approvel Po
+router.get('/approvel',async (req,res)=>{
+  try{
+  const unApprovedPos = await PurchaseOrder.find({isApproved:false,isVerified:true}).populate('project','name').select('project poNumber stage isApproved isVerified isRejected')
+
+res.send(unApprovedPos)
+
+  }catch(error){
+    res.status(500).json({ error: error.message });
+  }
+})
+
+
+
+router.patch('/verify/:id',setVerifiedByField,async(req,res)=>{
+  try{
+    const UpdateApprovel = await PurchaseOrder.findByIdAndUpdate(req.params.id,req.body)
+    res.send(UpdateApprovel)
+  }catch(error){
+    res.status(500).json({ error: error.message });
+  }
+})
+
+
+
+router.patch('/approvel/:id',setApprovedByField,async(req,res)=>{
+  try{
+    console.log(req.body)
+    const UpdateApprovel = await PurchaseOrder.findByIdAndUpdate(req.params.id,req.body)
+    res.send(UpdateApprovel)
+  }catch(error){
+    res.status(500).json({ error: error.message });
+  }
+})
+
+
 //get all po 
 
 router.get('/',async (req,res)=>{
@@ -67,164 +133,45 @@ router.patch("/:id", async (req,res)=>{
   }
 })
 
+// get by id
+router.get('/:id',async (req,res)=>{
+  try{
+        const poModel = await PurchaseOrder.findById(req.params.id)
+        res.send(poModel)
+  }catch(error){
+    res.status(500).json({ error: error.message });
+  }
+})
 
-  //po verification list
-  router.get('/verify', async (req, res) => {
-    try {
-      // Find Purchase Orders with isVerified set to false
-      const unverifiedPos = await PurchaseOrder.find({ isVerified: false }).populate('projectId','projectName').populate('vendorId','vendorName')
-  
-      if (unverifiedPos.length === 0) {
-        // No unverified Purchase Orders found
-        return res.status(404).json({ message: 'No Purchase Orders to verify' });
-      }
-  
-      // Process and send the unverified Purchase Orders
-      const processedUnverifiedPos = unverifiedPos.map((po) => {
-        return {
-          projectId:po.projectId,
-          siteName: po.projectId.projectName,
-          vendorId:po.vendorId,
-          poNumber: po.poNumber,
-          date: po.date,
-          stage: po.stage,
-          meterialCatagory: po.meterialCatagory,
-          items: po.items,
-          subTotal: po.subTotal,
-          sgst: po.sgst,
-          cgst: po.cgst,
-          totalAmount: po.totalAmount,
-          _id:po._id
-        };
-      });
-  
-      res.json(processedUnverifiedPos);
-    } catch (err) {
-      console.error('Error retrieving unverified Purchase Orders:', err);
-      res.status(500).json({ error: 'Internal Server Error' });
-    }
-  });
+
+//get by id for model view
+
+router.get('/view/:id',async (req,res)=>{
+  try{
+const po = await PurchaseOrder.findById(req.params.id).populate('vendor','name address').populate('project','projectName').populate('approvedBy verifiedBy createdBy','name')
+res.send(po)
+  }catch(error){
+    res.status(500).json({ error: error.message });
+  }
+})
+
+ 
 
 
 
-  // po approvel list 
-  router.get('/approve', async (req, res) => {
-    try {
-      const unApprovedPos = await PurchaseOrder.find({ isApproved: false}).populate('projectId','projectName')
-  
-      if (unApprovedPos.length === 0) {
-       
-        return res.status(404).json({ message: 'No Purchase Orders to Approve' });
-      }
-  
-      // Process and send the unverified Purchase Orders
-      const processedUnApprovedPos = unApprovedPos.map((po) => {
-        return {
-          siteName: po.projectId.projectName,
-          projectId:po.projectId._id, 
-          poNumber: po.poNumber,
-          date: po.date,
-          stage: po.stage,
-          meterialCatagory: po.meterialCatagory,
-          vendorId: po.vendorId,
-          items: po.items,
-          subTotal: po.subTotal,
-          sgst: po.sgst,
-          cgst: po.cgst,
-          totalAmount: po.totalAmount,
-          _id:po._id
-        };
-      });
-  
-      res.json(processedUnApprovedPos);
-    } catch (err) {
-      console.error('Error retrieving unApproved Purchase Orders:', err);
-      res.status(500).json({ error: 'Internal Server Error' });
-    }
-  });
-
-
-
-  // po verification from employee 
-  router.patch('/verify/:poId', async (req, res) => {
-    try {
-      const { poId } = req.params;
-      const { userid } = req.headers;
-      const updatedPo = await PurchaseOrder.findByIdAndUpdate(
-        poId,
-        { isVerified: true, verifiedId: userid  },
-        { new: true } 
-      );
-  
-      if (updatedPo) {
-        res.status(200).json({ message: 'Purchase Order verified successfully', updatedPo });
-      } else {
-        res.status(404).json({ error: 'Purchase Order not found' });
-      }
-    } catch (err) {
-      res.status(500).json({ error: err.message });
-    }
-  });
  
   
-    // po  approvel from admin
   
-    router.patch('/approve/:poId', async (req, res) => {
-      try {
-        const { poId } = req.params;
-        const { userid } = req.headers;
-        console.log(userid)
-    
-      
-        const updatedPo = await PurchaseOrder.findByIdAndUpdate(
-          poId,
-          { isApproved: true, approvedId: userid ,verifiedId:userid,isVerified:true},
-          { new: true } 
-        );
-    
-        if (updatedPo) {
-          res.status(200).json({ message: 'Purchase Order approved successfully', updatedPo });
-        } else {
-          res.status(404).json({ error: 'Purchase Order not found' });
-        }
-      } catch (err) {
-        res.status(500).json({ error: err.message });
-      }
-    });
+  
 
 // get po using project wize
 
-router.get('/project/:projectId', async (req, res) => {
+router.get('/project/:id', async (req, res) => {
   try {
-    const { projectId } = req.params;
-
-    // Find the projectname for the specified projectid
-    const project = await Customer.findById(projectId);
-
-    if (!project) {
-      return res.status(404).json({ error: 'No project found for the specified projectid' });
-    }
-
-    // Find all  documents with the specified projectid, select only id and date
-    const pos = await PurchaseOrder.find({"projectId":projectId}).select('_id date poNumber stage isVerified isApproved totalAmount' );
-
-    if (!pos || pos.length === 0) {
-      return res.status(404).json({ error: 'No PO found for the specified projectid' });
-    }
-    const reversedPos = pos.reverse();
-    // Return the project name and PO details (id and date)
-    // res.status(200).json({
-    //   siteName: project.projectName,
-    //   pos: reversedPos.map((po) => ({
-    //    _id:po._id,
-    //     date: po.date,
-    //     poNumber:po.poNumber,
-    //     stage:po.stage,
-    //     isVerified:po.isVerified,
-    //     isApproved:po.isApproved
-    //   })),
-    // });
-    res.status(200).json(reversedPos)
+   
+    const PoList = await PurchaseOrder.find({ project: req.params.id });
+    res.send(PoList)
+   
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
   }
@@ -232,48 +179,8 @@ router.get('/project/:projectId', async (req, res) => {
 
 
 
-  //get po by id 
-  router.get('/:id', async (req, res) => {
-    try {
-      const po = await PurchaseOrder
-        .findById(req.params.id)
-        .populate('projectId', 'projectName')
-        .populate('approvedId', 'name') 
-        .populate('verifiedId', 'name') 
-        .populate('vendorId' , 'shopName')
-        .lean(); 
-      if (po) {
-        const flattenedPo = {
-          siteName: po.projectId.projectName,
-          poNumber: po.poNumber,
-          poDate: po.date,
-          stage: po.stage,
-          meterialCatagory: po.meterialCatagory,
-          supplier: po.vendorId.shopName,
-          items: po.items,
-          subTotal: po.subTotal,
-          sgst: po.sgst,
-          cgst: po.cgst,
-          totalAmount: po.totalAmount,
-          isVerified:po.isVerified,
-          isApproved: po.isApproved,
-          approvedBy: po.approvedId ? po.approvedId.adminName : 'Not to get name', 
-          verifiedBy: po.verifiedId ? po.verifiedId.empName : 'Not Verified', 
-        };
-  
-        res.json(flattenedPo);
-      } else {
-        res.status(404).json({ error: 'Purchase Order not found' });
-      }
-    } catch (err) {
-      console.error('Error retrieving Purchase Order:', err);
-      res.status(500).json({ error: 'Internal Server Error' });
-    }
-  });
 
 
-
-  // get po descrption using query
   router.get("/description/:searchTerm", async (req, res) => {
     try {
         const { searchTerm } = req.params;
@@ -316,10 +223,7 @@ router.delete('/:id', async (req,res)=>{
         const {id}=req.params
         const deletePo= await PurchaseOrder.findByIdAndDelete(id)
 
-        if(!deletePo){
-          return
-          res.status(404).json({ error: 'Purchase order not found' });
-        }
+        
           res.send("purchase order deleted successfully");
   }catch(error){
     res.status(500).json({ error: 'Internal server error' });

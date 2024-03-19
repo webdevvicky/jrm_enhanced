@@ -20,12 +20,12 @@
     },
     {to:"/accounts",label:"Accounts/Purchase"},
     {
-      to: "Accounts/Purchase",
+      to: "Accounts",
       subcategories: [
         {to:'/accounts/gst',label:'GST Billing'},
         {to:'/accounts/vendor',label:'Vendors'},
         {to:'/accounts/contractor',label:'Contractors'},
-        {to:'/accounts/purchase',label:'Purchase Order'},
+        {to:'/accounts/purchaseorder',label:'Purchase Order'},
         {to:'/accounts/voucher',label:'Voucher'},
         {to:'/accounts/Project',label:'Projects'},
         {to:'/accounts/status',label:'Status'},

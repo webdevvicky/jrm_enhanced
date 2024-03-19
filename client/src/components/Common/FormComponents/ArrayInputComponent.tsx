@@ -12,6 +12,7 @@ const ArrayInput = <T extends {}>({
   notRequired,
   watch,
   onTotalChange,
+  isSubtotal,
 }: ArrayInputProps<T>) => {
   const {
     fields: arrayFields,
@@ -118,13 +119,13 @@ const ArrayInput = <T extends {}>({
                 colSpan={multiplyFields ? fields.length + 1 : fields.length}
                 className=" text-end "
               >
-                Total
+                {isSubtotal ? "Sub Total " : "Total"}
               </td>
               <td colSpan={2}>
                 {(() => {
                   const totalSum = arrayFields.reduce((sum, _, index) => {
                     const total = calculateTotal(index);
-                    
+
                     return sum + total;
                   }, 0);
 

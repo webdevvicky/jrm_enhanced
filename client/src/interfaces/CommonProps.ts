@@ -28,6 +28,7 @@
   onTotalChange?:(roundedTotal:string)=>void
   watch: UseFormWatch<T>;
   isNumberFields?: Record<string, boolean>;
+  isSubtotal?:boolean
 }
 
 export interface ArrayField {

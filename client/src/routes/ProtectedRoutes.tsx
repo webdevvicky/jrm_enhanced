@@ -35,10 +35,15 @@ import AccountsHome from "../components/Accounts/AccountsHome";
 import VendorInfo from "../components/Vendors/VendorInfo";
 import VendorsStatus from "../components/Vendors/VendorsStatus";
 import AccountsStatus from "../components/Accounts/AccountsStatus";
+import ContractorInfo from "../components/Contractors/ContractorInfo";
+import ContractorStatus from "../components/Contractors/ContractorStatus";
+import PoForm from "../components/PurchaseOrders/PoForm";
+import PoModel from "../components/PurchaseOrders/PoModel";
 
 const ProtectedRoutes = () => {
   const isAdmin = getUserRole() === "admin";
   const allowedRoutes = getAllowedRoutes();
+  console.log(allowedRoutes)
   if (!isLoggedIn()) {
     // If no token or decoded user information, navigate to the login page
     return (
@@ -110,19 +115,25 @@ const ProtectedRoutes = () => {
                 <Route path="new" element={<VendorForm />} />
                 <Route path="edit/:id" element={<VendorForm />} />
                 <Route path="view/:id" element={<VendorInfo />} />
-                <Route path="view/:id" element={<VendorInfo />} />
                 <Route path="status" element={<VendorsStatus />} />
               </Route>
+
               <Route path="contractor">
                 <Route index element={<ContractorList />} />
                 <Route path="new" element={<ContractorForm />} />
                 <Route path="edit/:id" element={<ContractorForm />} />
-              </Route>
-              <Route path="po">
-                <Route index element={<PoList />} />
+                <Route path="view/:id" element={<ContractorInfo />} />
+                <Route path="status" element={<ContractorStatus />} />
               </Route>
 
-              <Route path="status"  element={<AccountsStatus/>}/>
+              <Route path="purchaseorder">
+                <Route index element={<PoList />} />
+                <Route path="new" element={<PoForm />} />
+                <Route path="edit/:id" element={<PoForm />} />
+                <Route path="view/:id" element={<PoModel />} />
+              </Route>
+
+              <Route path="status" element={<AccountsStatus />} />
             </Route>
           )}
 

@@ -1,13 +1,11 @@
 import React from "react";
 import { isAdmin } from "../../../utils/auth";
 import {
-  ChatRight,
-  Check2,
+  
   Check2All,
   ExclamationTriangle,
   ExclamationTriangleFill,
-  FileArrowUpFill,
-  PersonBadge,
+
 } from "react-bootstrap-icons";
 
 interface RejectBtnProps {

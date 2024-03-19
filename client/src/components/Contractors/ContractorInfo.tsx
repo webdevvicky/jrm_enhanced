@@ -13,25 +13,24 @@ import {
   Paypal,
   Person,
   Phone,
-  Shop,
   Telephone,
   TelephoneForward,
   TelephonePlus,
 } from "react-bootstrap-icons";
+import contractorService from "../../services/contractor/contractorService";
 
-const VendorInfo = () => {
+const ContractorInfo = () => {
   const { id } = useParams();
 
   const {
     isLoading,
     isError,
-    data: vendor,
+    data: contractor,
   } = useQuery({
-    queryKey: ["vendor", id],
+    queryKey: ["contractor", id],
     queryFn: async () => {
-      const res: AxiosResponse<VendorProps> = await vendorService.getById(
-        `${id}`
-      );
+      const res: AxiosResponse<ContractorProps> =
+        await contractorService.getById(`${id}`);
       return res.data;
     },
   });
@@ -44,33 +43,47 @@ const VendorInfo = () => {
   }
   return (
     <div className=" container">
-      <Header lable=" Vendor Deatails" />
       <div className=" bg-white p-3 border shadow-sm rounded-3 mb-3">
-        <Header lable="Shop Details" />
+        <Header lable="Contractor Details" />
+
         <div className="row">
           <div className="col-md-8 d-flex  align-items-center">
-            <Shop size={30} color="solid" />
-            <span className=" fw-bold  ps-4 fs-5"> {vendor?.name}</span>
+            <Person size={30} color="solid" />
+            <span className=" fw-bold  ps-4 fs-5"> {contractor?.name}</span>
           </div>
           <div className="col-md-4 d-flex  align-items-center">
-            <b>GST :</b>
-            <span className=" fw-bold  ps-4 fs-5"> {vendor?.name}</span>
+            <Phone size={30} />
+            <span className=" fw-bold  ps-4 fs-5">
+              {" "}
+              {contractor?.mobileNumber}
+            </span>
           </div>
         </div>
+
         <div className="row py-3">
           <div className="col-md-12">
-            <GeoAlt size={30} />
-            <span className=" fw-bold  ps-4 fs-5"> {vendor?.address}</span>
+            permanent <GeoAlt size={30} />
+            <span className=" fw-bold  ps-4 fs-5">
+              {" "}
+              {contractor?.permanentAddress}
+            </span>
+          </div>
+          <div className="col-md-12">
+            Temparary <GeoAlt size={30} />
+            <span className=" fw-bold  ps-4 fs-5">
+              {" "}
+              {contractor?.temporaryAddress}
+            </span>
           </div>
         </div>
         <div className="row">
           <div className="col-md-6 d-flex  align-items-center">
             <CartCheck size={30} />
-            <span className=" fw-bold  ps-4 fs-5"> {vendor?.items}</span>
+            <span className=" fw-bold  ps-4 fs-5"> {contractor?.category}</span>
           </div>
           <div className="col-md-6 d-flex  align-items-center">
             <CurrencyRupee size={30} />
-            <span className=" fw-bold  ps-4 fs-5"> {vendor?.rate}</span>
+            <span className=" fw-bold  ps-4 fs-5"> {contractor?.rate}</span>
           </div>
         </div>
 
@@ -83,14 +96,14 @@ const VendorInfo = () => {
             <b>Account Number :</b>
             <span className=" fw-bold  ps-4 fs-5">
               {" "}
-              {vendor?.accountDetails.accountNumber}
+              {contractor?.accountDetails.accountNumber}
             </span>
           </div>
           <div className="col-md-6 d-flex  align-items-center">
             <b>IFSC :</b>
             <span className=" fw-bold  ps-4 fs-5">
               {" "}
-              {vendor?.accountDetails.ifsc}
+              {contractor?.accountDetails.ifsc}
             </span>
           </div>
         </div>
@@ -99,14 +112,14 @@ const VendorInfo = () => {
             <Bank size={30} />
             <span className=" fw-bold  ps-4 fs-5">
               {" "}
-              {vendor?.accountDetails.branchName}
+              {contractor?.accountDetails.branchName}
             </span>
           </div>
           <div className="col-md-6 d-flex  align-items-center">
             <Paypal size={30} />
             <span className=" fw-bold  ps-4 fs-5">
               {" "}
-              {vendor?.accountDetails.upi}
+              {contractor?.accountDetails.upi}
             </span>
           </div>
         </div>
@@ -117,18 +130,15 @@ const VendorInfo = () => {
         <div className="row">
           <div className="col-md-4 d-flex  align-items-center">
             <Phone size={30} />
-            <span className=" fw-bold  ps-4 fs-5"> {vendor?.mobileNumber}</span>
+            <span className=" fw-bold  ps-4 fs-5">
+              {" "}
+              {contractor?.mobileNumber}
+            </span>
           </div>{" "}
           <div className="col-md-4 d-flex  align-items-center">
             <Telephone size={30} />
             <span className=" fw-bold  ps-4 fs-5">
-              {vendor?.landlineNumber}
-            </span>
-          </div>
-          <div className="col-md-4 d-flex  align-items-center">
-            <TelephonePlus size={30} />
-            <span className=" fw-bold  ps-4 fs-5">
-              {vendor?.alternateNumber}
+              {contractor?.alternateMobile}
             </span>
           </div>
         </div>
@@ -137,39 +147,19 @@ const VendorInfo = () => {
           <div className="col-md-4 d-flex  align-items-center">
             <Person size={30} />
             <span className=" fw-bold  ps-4 fs-5">
-              {vendor?.salesPersonName}
+              {contractor?.alternatePerson}
             </span>
           </div>
           <div className="col-md-4 d-flex  align-items-center">
             <TelephoneForward size={30} />
             <span className=" fw-bold  ps-4 fs-5">
-              {vendor?.salesPersonMobile}
+              {contractor?.alternateMobile}
             </span>
           </div>
         </div>
-
-        {(vendor?.ownerName || vendor?.ownerNumber) && (
-          <div>
-            <div className="py-3">
-              <Header lable=" Owner Details" />
-            </div>
-            <div className="row">
-              <div className="col-md-4 d-flex  align-items-center">
-                <Person size={30} />
-                <span className=" fw-bold  ps-4 fs-5">{vendor?.ownerName}</span>
-              </div>{" "}
-              <div className="col-md-4 d-flex  align-items-center">
-                <Phone size={30} />
-                <span className=" fw-bold  ps-4 fs-5">
-                  {vendor?.ownerNumber}
-                </span>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
 };
 
-export default VendorInfo;
+export default ContractorInfo;

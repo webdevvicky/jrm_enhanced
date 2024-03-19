@@ -1,82 +1,95 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { AxiosResponse } from "axios";
-import SelectProjectComponent from "../Projects/SelectProjectComponenet";
-import { handleApiError } from "../../utils/apiUtils";
-import { format } from "date-fns";
-import Header from "../Common/Header/Header";
-import Loader from "../Common/Loader/Loader";
-import poUsingProjectService from "../../services/po/poUsingProjectService";
+import { useState } from "react";
 import { ProjectOption } from "../../interfaces/CommonProps";
+import SelectProjectComponent from "../Projects/SelectProjectComponenet";
+import { Link } from "react-router-dom";
+import { PlusCircleDotted } from "react-bootstrap-icons";
+import PendingPoPayment from "./PendingPoPayment";
+import Header from "../Common/Header/Header";
+import { useQuery } from "@tanstack/react-query";
+import { AxiosResponse } from "axios";
+import poUsingProjectService from "../../services/po/poUsingProjectService";
+import Loader from "../Common/Loader/Loader";
 
-const PoList: React.FC = () => {
-  const [pos, setPos] = useState<PoModelProps[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleProjectSelect = (project: ProjectOption) => {
-    console.log(project._id)
-    setIsLoading(true);
-
-    poUsingProjectService
-      .getById<PoModelProps[]>(project._id)
-      .then((res: AxiosResponse) => {
-        setPos(res.data);
-        console.log(res.data);
-      })
-      .catch((err: any) => {
-        handleApiError(err);
-        setPos([]);
-      })
-      .finally(() => setIsLoading(false));
-  };
+const PoList = () => {
+  const [selectedProject, setSelectedProject] = useState<ProjectOption>();
+  const { data: poList = [] } = useQuery({
+    queryKey: ["poList", selectedProject?._id],
+    queryFn: async () => {
+      const res: AxiosResponse<PoListProps[]> =
+        await poUsingProjectService.getById(
+          selectedProject ? selectedProject._id : ""
+        );
+      return res.data;
+    },
+  });
 
   return (
-    <div className="container">
-      <div className="row">
-        <div className="col-md-12 py-3">
-          <Header lable="Select Project to View Purchase Orders" />
-          <SelectProjectComponent onChange={handleProjectSelect} />
+    <>
+      <div className="container ">
+        <div className="row">
+          <div className="col-md-6">
+            <SelectProjectComponent
+              onChange={(project) => setSelectedProject(project)}
+            />
+          </div>
+          <div className="col-md-6 text-center d-flex align-items-center justify-content-center">
+            <h4>
+              {selectedProject
+                ? `Selected Project ${selectedProject?.projectName}`
+                : "Select Project to Continue"}
+            </h4>
+          </div>
         </div>
-      </div>
 
-      <div className="row">
-        <table className="table table-secondary text-center ">
-          <thead>
-            <tr>
-              <th>S.No</th>
-              <th>Date</th>
-              <th>PO No</th>
-              <th>Stage </th>
-              <th>Payment Made</th>
-              <th>View</th>
-            </tr>
-          </thead>
-          <tbody>
-            {pos.length >= 1 ? (
-              pos.map((po, index) => (
-                <tr key={po._id}>
-                  <td>{index + 1}</td>
-                  <td>{po ? format(new Date(po.date), "dd/MM/yyyy") : ""}</td>
-                  <td>{po.poNumber}</td>
-
-                  <td>{po.stage}</td>
-                  <td>{po.totalAmount}</td>
-                  <td>
-                    <Link to={`/purchase/${po._id}`}>view</Link>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={6} className=" text-bg-danger py-3">
-                  {!isLoading ? "  No Invoices to Display" : <Loader />}
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+        {selectedProject && (
+          <>
+            <div className=" mt-3">
+              <Link to={"new"} state={{ project: selectedProject }}>
+                <PlusCircleDotted size={30} />
+              </Link>
+            </div>
+            <div className="row">
+              <Header lable="Purchase Order -Pending payment List" />
+            </div>
+            <PendingPoPayment projectId={selectedProject._id} />
+            <div className="row">
+              <Header lable="Purchase Order  List" />
+            </div>
+            <div className=" bg-white p-3 border rounded-3 ">
+              <table className="table  table-borderless ">
+                <thead>
+                  {" "}
+                  <tr>
+                    <th>S No</th>
+                    <th>Po No</th>
+                    <th>Date</th>
+                    <th>Stage</th>
+                    <th>Vendor </th>
+                    <th>Approved Rate</th>
+                    <th>View</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {poList.map((po, index) => (
+                    <tr key={po._id}>
+                      <td>{index + 1}</td>
+                      <td>{po.poNumber}</td>
+                      <td>{po.date}</td>
+                      <td>{po.stage}</td>
+                      <td>{po.vendor.name}</td>
+                      <td>{po.totalAmount}</td>
+                      <td>
+                        <Link to={`view/${po._id}`}>open</Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
       </div>
-    </div>
+    </>
   );
 };
 

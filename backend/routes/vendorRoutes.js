@@ -43,7 +43,6 @@ router.get('/', async (req, res) => {
 
 router.get('/list', async (req, res) => {
   try {
-    console.log(req.query)
     const page = parseInt(req.query.page) || 1; // Get the requested page number from query parameters, default to page 1 if not provided
     const pageSize = parseInt(req.query.pageSize) || 10; // Number of vendors per page
     const skip = (page - 1) * pageSize; // Calculate the number of documents to skip
@@ -51,7 +50,7 @@ router.get('/list', async (req, res) => {
 
 
     // Query vendors with pagination and search
-    const vendorsQuery = Vendor.find({ isActive: true });
+    const vendorsQuery = Vendor.find({ isActive: true,isApproved:true });
 
     // Apply search filter if search query is provided
     if (searchQuery) {

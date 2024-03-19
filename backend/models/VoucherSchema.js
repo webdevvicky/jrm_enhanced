@@ -1,26 +1,26 @@
 const mongoose = require('mongoose');
 
 const VoucherSchema = new mongoose.Schema({
-    projectId: {  type: mongoose.Schema.Types.ObjectId,
-        ref: 'Customer' },
+        project: {  type: mongoose.Schema.Types.ObjectId,
+        ref: 'Project' },
         voucherNumber:{ type:Number},
-        voucherDate: { type: Date, default: Date.now },
-        paymentAmount:{ type:Number},
-        paymentMethod: { type: String, required: true },
+        poNumber:{type:Number},
+        date: { type: Date, default: Date.now },
         description: { type: String, required: true },
-        printedById: {  type: mongoose.Schema.Types.ObjectId,
+        paymentAmount:{ type:Number},
+        paymentMode: { type: String, required: true },
+        createdBy: {  type: mongoose.Schema.Types.ObjectId,
             ref: 'User' },
-        transferredById: {  type: mongoose.Schema.Types.ObjectId,
+        verifiedBy: {  type: mongoose.Schema.Types.ObjectId,
                 ref: 'User' },
-        receiverId: {  type: mongoose.Schema.Types.ObjectId,
-                    ref: 'User' },
-
-
-    status:{type:Boolean,default:true},
+       ApprovedBy: {  type: mongoose.Schema.Types.ObjectId,
+        ref: 'User' },
+        isApproved:{type:Boolean,default:false},
+        isVerified:{type:Boolean,default:false},
+        isRejected:{type:Boolean,default:false},
    
-   // uploadedby: { type: mongoose.Schema.Types.ObjectId, ref: 'employeeinfo' },
 
-});
+},{timestamps:true});
 
 const   Voucher = mongoose.model('Voucher', VoucherSchema);
 

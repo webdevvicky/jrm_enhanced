@@ -1,132 +1,198 @@
 import { useForm } from "react-hook-form";
 import InputComponent from "../Common/FormComponents/InputComponent";
+import { handleApiError } from "../../utils/apiUtils";
+import { useNavigate, useParams } from "react-router-dom";
 import SubmitComponent from "../Common/FormComponents/SumitComponent";
-import contractService from "../../services/contractor/contractService";
+import Header from "../Common/Header/Header";
+import EditButton from "../Common/AuthButtons/EditButton";
 import { AxiosResponse } from "axios";
 import { useEffect } from "react";
-import { handleApiError } from "../../utils/apiUtils";
-import { useNavigate } from "react-router-dom";
-interface IsEdit {
-  isEdit?: boolean;
-  data?: ContractorProps;
-}
-interface ContractorProps extends NewContractor {
-  _id: string;
-}
-const ContractorForm = ({ isEdit, data }: IsEdit) => {
-  // const [contractor, setContractor] = useState<ContractorProps | null>(
-  //   data ?? null
-  // );
+import contractorService from "../../services/contractor/contractorService";
 
-  const contractor = data;
+const ContractorForm = () => {
+  const { id } = useParams();
+  const isEditMode = !!id;
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
-  } = useForm<NewContractor>({
-    defaultValues: isEdit ? { ...contractor } : {},
-  });
+  } = useForm<ContractorFormProps>();
 
   const navigate = useNavigate();
-  useEffect(() => {}, []);
-  const handleNewContractor = (contract: NewContractor) => {
-    if (isEdit) {
-      const updated = { _id: contractor ? contractor._id : "", ...contract };
-      contractService
-        .update(updated)
-        .then((res: AxiosResponse) => {
-          window.alert(res.statusText);
-          window.location.reload();
-        })
-        .catch((err: any) => {
-          handleApiError(err);
-        });
+
+  useEffect(() => {
+    if (isEditMode) {
+      contractorService
+        .getById<ContractorFormProps>(id)
+        .then((res: AxiosResponse) => reset(res.data));
+    }
+  }, [id]);
+
+  const handleContractorForm = (contractor: ContractorFormProps) => {
+    if (isEditMode) {
+      const updatedData = { _id: id, ...contractor, isRejected: false };
+
+      contractorService
+        .update(updatedData)
+        .then((res: AxiosResponse<ContractorProps>) =>
+          navigate(`/accounts/contractor/view/${res.data._id}`)
+        )
+        .catch((err: any) => handleApiError(err));
     } else {
-      contractService
-        .create(contract)
-        .then((res: AxiosResponse) => {
-          window.alert(res.statusText);
-          navigate("/contractor/list");
-        })
-        .catch((err: any) => {
-          handleApiError(err);
-        });
+      contractorService
+        .create(contractor)
+        .then((res: AxiosResponse<ContractorProps>) =>
+          navigate(`/accounts/contractor/view/${res.data._id}`)
+        )
+        .catch((err: any) => handleApiError(err));
     }
   };
+
   return (
-    <div className="container">
-      <form onSubmit={handleSubmit(handleNewContractor)}>
-        <InputComponent
-          name="contractName"
-          error={errors.contractName}
-          register={register}
-          label="Contract Name With Site"
-        />
-        <InputComponent
-          name="ownerName"
-          error={errors.ownerName}
-          register={register}
-          label="owner Name "
-        />
-        <InputComponent
-          name="contractorType"
-          error={errors.contractorType}
-          register={register}
-          label="Contractor Type"
-        />
-        <InputComponent
-          name="contractorMobile"
-          error={errors.contractorMobile}
-          register={register}
-          label="Contractor Mobile"
-          isNumber
-          notRequired
-        />
-        <InputComponent
-          name="alternateMobile"
-          error={errors.alternateMobile}
-          register={register}
-          label=" Alternate Mobile Number"
-          notRequired
-          isNumber
-        />
-        <InputComponent
-          name="contractorEmail"
-          error={errors.contractorEmail}
-          register={register}
-          label="Contractor Email"
-          notRequired
-        />
-        <InputComponent
-          name="gpayNumber"
-          error={errors.gpayNumber}
-          register={register}
-          label="G Pay Number"
-          isNumber
-          notRequired
-        />
-        <InputComponent
-          name="accountNumber"
-          error={errors.accountNumber}
-          register={register}
-          label="Account  Number"
-          isNumber
-          notRequired
-        />
-        <InputComponent
-          name="ifsc"
-          error={errors.ifsc}
-          register={register}
-          label="IFSC"
-          notRequired
-        />
-        {isEdit ? (
-          <SubmitComponent btnlable="Update  Contractor" />
-        ) : (
-          <SubmitComponent btnlable="New Contractor" />
-        )}
-      </form>
-    </div>
+    <>
+      <h2 className="  text-center">Contractor Form</h2>
+      <div className="container bg-white border rounded-0 py-2">
+        <Header lable="Contractor Details" />
+        <form onSubmit={handleSubmit(handleContractorForm)}>
+          <div className="row ">
+            <div className="col-sm-6 col-md-4 col-lg-3">
+              <InputComponent
+                register={register}
+                error={errors.name}
+                label="Contractor Name"
+                name="name"
+              />
+            </div>
+            <div className="col-sm-6 col-md-4 col-lg-3">
+              <InputComponent
+                register={register}
+                error={errors.mobileNumber}
+                label="Mobile Number"
+                name="mobileNumber"
+              />
+            </div>
+            <div className="col-sm-6 col-md-4 col-lg-3">
+              <InputComponent
+                register={register}
+                error={errors.category}
+                label="Category"
+                name="category"
+              />
+            </div>
+
+            <div className="col-sm-6 col-md-4 col-lg-3">
+              <InputComponent
+                register={register}
+                error={errors.rate}
+                label="Rate"
+                name="rate"
+              />
+            </div>
+          </div>
+
+          <div className="row">
+            <div className="col-sm-6 col-md-4 col-lg-3">
+              <InputComponent
+                register={register}
+                error={errors.alternatePerson}
+                label="Alternate Person"
+                name="alternatePerson"
+              />
+            </div>
+            <div className="col-sm-6 col-md-4 col-lg-3">
+              <InputComponent
+                register={register}
+                error={errors.alternateMobile}
+                label="Alternate Person Number"
+                name="alternateMobile"
+              />
+            </div>
+            <div className="col-sm-6 col-md-4 col-lg-3">
+              <InputComponent
+                register={register}
+                error={errors.permanentAddress}
+                label="Permanent Address"
+                name="permanentAddress"
+              />
+            </div>
+            <div className="col-sm-6 col-md-4 col-lg-3">
+              <InputComponent
+                register={register}
+                error={errors.temporaryAddress}
+                label="Temporary Address"
+                name="temporaryAddress"
+              />
+            </div>
+          </div>
+
+          <Header lable="Account Details" />
+
+          <div className="row pb-3">
+            <div className="col-sm-6 col-md-4 col-lg-3">
+              {" "}
+              <InputComponent
+                register={register}
+                error={errors.accountDetails?.accountNumber}
+                label="Account No"
+                name="accountDetails.accountNumber"
+                isNumber
+              />
+            </div>
+            <div className="col-sm-6 col-md-4 col-lg-3">
+              <InputComponent
+                register={register}
+                error={errors.accountDetails?.ifsc}
+                label="IFSC"
+                name="accountDetails.ifsc"
+              />
+            </div>
+            <div className="col-sm-6 col-md-4 col-lg-3">
+              <InputComponent
+                register={register}
+                error={errors.accountDetails?.branchName}
+                label="Branch Name"
+                name="accountDetails.branchName"
+              />
+            </div>
+            <div className="col-sm-6 col-md-4 col-lg-3">
+              <InputComponent
+                register={register}
+                error={errors.accountDetails?.upi}
+                label="Upi"
+                name="accountDetails.upi"
+              />
+            </div>
+          </div>
+
+          <Header lable=" ID Proof Details" />
+          <div className="row">
+            <div className="col-md-6">
+              <InputComponent
+                register={register}
+                error={errors.idProofType}
+                label="ID Proof Type"
+                name="idProofType"
+              />
+            </div>
+            <div className="col-md-6">
+              <InputComponent
+                register={register}
+                error={errors.idProofNumber}
+                label="Id Proof Number"
+                name="idProofNumber"
+              />
+            </div>
+          </div>
+
+          {isEditMode ? (
+            <EditButton label="Edit" />
+          ) : (
+            <SubmitComponent btnlable="submit" />
+          )}
+        </form>
+      </div>
+    </>
   );
 };
 

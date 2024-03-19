@@ -15,7 +15,8 @@ interface IncrementDetail {
   interface AccountDetails{
     accountNumber:number,
     ifsc:string,
-    gpay:number
+    upi:number
+    branchName:string
   }
 
   interface PersonalDetails{

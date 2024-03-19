@@ -1,3 +1,3 @@
 import apidata from "../HTTP-Service"
 
-export default  apidata("/purchase/project")    
+export default  apidata("/purchaseorder/project")    

@@ -8,28 +8,30 @@ import DeleteButton from "../Common/AuthButtons/DeleteButton";
 import Loader from "../Common/Loader/Loader";
 import { Link, useNavigate } from "react-router-dom";
 import { FileEarmark } from "react-bootstrap-icons";
-import vendorService from "../../services/vendor/vendorService";
-import vendorApprovelService from "../../services/vendor/vendorApprovelService";
+import contractorApprovelService from "../../services/contractor/contractorApprovelService";
+import contractorService from "../../services/contractor/contractorService";
 
-const VendorsStatus = () => {
+const ContractorStatus = () => {
   const navigate = useNavigate();
 
   const handleReject = (id: string) => {
-    vendorService.update({ _id: id, isRejected: true });
+    contractorService.update({ _id: id, isRejected: true });
     refetch();
     refetch();
   };
 
   const handleApprove = (id: string) => {
-    vendorService.update({ _id: id, isApproved: true, isRejected: false });
+    contractorService.update({ _id: id, isApproved: true, isRejected: false });
     refetch();
     refetch();
   };
   const handleDelete = (id: string) => {
-    vendorService.delete(id);
+    contractorService.delete(id);
     refetch();
     refetch();
   };
+
+   
 
   const {
     isLoading,
@@ -37,17 +39,21 @@ const VendorsStatus = () => {
     refetch,
     isRefetching,
 
-    data: ApprovelList = [],
+    data: contractorApprovelList=[],
   } = useQuery({
-    queryKey: ["ApprovelList", handleReject, handleDelete, handleApprove],
+    queryKey: [
+      "contractorApprovelList",
+      handleReject,
+      handleDelete,
+      handleApprove,
+    ],
     queryFn: async () => {
-      const res: AxiosResponse<VendorApprovelListProps[]> =
-        await vendorApprovelService.getall();
+      const res: AxiosResponse<ContractorApprovelListProps[]> =
+        await contractorApprovelService.getall();
       return res.data;
     },
   });
 
-  
   if (isLoading) {
     return <Loader />;
   }
@@ -56,10 +62,6 @@ const VendorsStatus = () => {
   }
   if (isRefetching) {
     return <Loader />;
-  }
-
-  if(ApprovelList.length <= 0 ){
-    return null
   }
   return (
     <div className=" container ">
@@ -72,8 +74,7 @@ const VendorsStatus = () => {
             <tr>
               <th>S.No</th>
               <th>Name</th>
-              <th>Address</th>
-              <th>Items</th>
+              <th>Category</th>
               <th>Rate</th>
               <th>View</th>
               <th>Edit</th>
@@ -83,43 +84,42 @@ const VendorsStatus = () => {
             </tr>
           </thead>
           <tbody>
-            {ApprovelList.map((vendor:VendorApprovelListProps, index:number) => (
-              <tr key={vendor._id}>
+            {contractorApprovelList.map((contractor, index) => (
+              <tr key={contractor._id}>
                 <td>{index + 1}</td>
-                <td>{vendor.name}</td>
-                <td>{vendor.address}</td>
-                <td>{vendor.items}</td>
-                <td>{vendor.rate}</td>
+                <td>{contractor.name}</td>
+                <td>{contractor.catagory}</td>
+                <td>{contractor.rate}</td>
                 <td>
                   {" "}
-                  <Link to={`/accounts/vendor/view/${vendor._id}`}>
+                  <Link to={`/accounts/contractor/view/${contractor._id}`}>
                     <FileEarmark size={30} className="mx-2" />
                   </Link>
                 </td>
                 <td>
                   <EditButton
-                    isRejected={vendor.isRejected}
+                    isRejected={contractor.isRejected}
                     onClick={() =>
-                      navigate(`/accounts/vendor/edit/${vendor._id}`)
+                      navigate(`/accounts/contractor/edit/${contractor._id}`)
                     }
                   />
                 </td>
                 <td>
                   <RejectButton
-                    isRejected={vendor.isRejected}
-                    onClick={() => handleReject(vendor._id)}
+                    isRejected={contractor.isRejected}
+                    onClick={() => handleReject(contractor._id)}
                   />
                 </td>
                 <td>
                   <ApprovelButton
-                    isApproved={vendor.isApproved}
-                    onClick={() => handleApprove(vendor._id)}
+                    isApproved={contractor.isApproved}
+                    onClick={() => handleApprove(contractor._id)}
                   />
                 </td>
                 <td>
                   <DeleteButton
-                    isApproved={vendor.isApproved}
-                    onClick={() => handleDelete(vendor._id)}
+                    isApproved={contractor.isApproved}
+                    onClick={() => handleDelete(contractor._id)}
                   />
                 </td>
               </tr>
@@ -131,4 +131,4 @@ const VendorsStatus = () => {
   );
 };
 
-export default VendorsStatus;
+export default ContractorStatus;

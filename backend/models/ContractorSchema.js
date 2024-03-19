@@ -1,43 +1,27 @@
 const mongoose = require('mongoose');
 
 const contractorSchema = new mongoose.Schema({
-    contractName: {
-        type: String,
-      
+    name: { type: String, required: true },
+    mobileNumber: { type: String, required: true },
+    category: { type: String },
+    rate: { type: String },
+    alternateMobile: { type: Number },
+    alternatePerson: { type: String },
+    permanentAddress: { type: String },
+    temporaryAddress: { type: String },
+    accountDetails: {
+        accountNumber: { type: Number },
+        branchName: { type: String },
+        ifsc: { type: String },
+        upi: { type: String }
     },
-    ownerName: {
-        type: String,
-       
-    },
-    contractorMobile: {
-        type: Number,
-      
-    },
-    alternateMobile: {
-        type: Number
-    },
-    contractorEmail: {
-        type: String,
-       
-    },
-    gpayNumber: {
-        type: Number
-    },
-    accountNumber: {
-        type: Number,
-       
-    },
-    ifsc: {
-        type: String,
-      
-    },
-    contractorType: {
-        type: String,
-       
-    }
-}, {
-    timestamps: true // This will add 'createdAt' and 'updatedAt' fields
-});
+    idProofType: { type: String },
+    idProofNumber: { type: String },
+    isApproved: { type: Boolean, default: false },
+    isRejected:{ type: Boolean, default: false },
+    isActive: { type: Boolean, default: true },
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+}, { timestamps: true });
 
 const Contractor = mongoose.model('Contractor', contractorSchema);
 

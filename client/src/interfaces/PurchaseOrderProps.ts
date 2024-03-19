@@ -1,51 +1,89 @@
 interface PoItemProps {
     id: number;
-    description: string;
+    item: string;
     meterialFor: number;
-    quantity:number;
+    qty:number;
     unit: string;
     rate: number;
     amount?: number;
   }
 
-interface NewPoProps{
-    projectId:string,
+interface PoFormProps{
+    project:string,
     stage:string,
-    meterialCatagory:string,
-    vendorId:string,
+    meterialCategory:string,
+    vendor:string,
     items:PoItemProps[],
     subTotal:number,
     sgst:number ,
     cgst:number,
+    igst:number
     totalAmount:number,
    
 }
 
-interface UnApprovelPo extends NewPoProps{
-  _id:string
-siteName:string,
-poNumber:number,
-date:string
-}
-
-interface PoModelProps{
-  _id:string
-    siteName:string,
-    poNumber:string,
-    date:string,
-    stage:string,
-    meterialCatagory:string,
-    supplier:string,
-    items:PoItemProps[],
+interface PoModelProps {
+  _id:string,
+  createdBy:Employee
+  approvedBy:Employee
+  verifiedBy:Employee
+  isApproved:boolean,
+  isVerified:boolean
+  date:string
+  poNumber:number
+  project:ProjectProps
+  stage:string,
+  meterialCategory:string,
+  vendor:VendorProps
+  items:PoItemProps[],
     subTotal:number,
     sgst:number ,
     cgst:number,
+    igst:number
     totalAmount:number,
-    isApproved:boolean,
-    approvedBy:string,  
-    isVerified:boolean,
-    verifiedBy:string
 }
+
+
+interface PoPendingPaymentProps{
+  poNumber:number,
+  date:string,
+  stage:string,
+  totalAmount:number,
+  payedAmount:number
+  balanceAmount:number,
+  _id:string
+
+}
+
+interface PoListProps{
+  _id:string,
+  poNumber:number,
+  date:string,
+  stage:string,
+  vendor:VendorProps
+  totalAmount:number,
+  
+
+}
+
+interface UnverifiedPoProps{
+  _id:string
+  poNumber:number,
+  project:ProjectProps,
+  stage:string,
+  isVerified:boolean,
+  isApproved:boolean,
+  isRejected:boolean
+}
+interface UnApprovedPoProps extends UnverifiedPoProps{
+  approvedBy:Employee
+}
+
+
+
+
+
+
 
 interface SearchDescriptionResults {
     _id: string;

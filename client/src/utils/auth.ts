@@ -80,7 +80,7 @@ export const useTokenNavigationEffect = () => {
 
   export const hasVerifyAuth = (): boolean => {
     const role = getUserRole();
-    return role === 'isAdmin' || role === 'generalmanager' || role === 'projectmanager';
+    return role === 'admin' || role === 'generalmanager' || role === 'projectmanager';
   };
 
 
