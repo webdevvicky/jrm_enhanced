@@ -1,9 +1,8 @@
 import { useForm } from "react-hook-form";
 import { ArrayField } from "../../interfaces/CommonProps";
 import ArrayInput from "../Common/FormComponents/ArrayInputComponent";
-import Header from "../Common/Header/Header";
 import SubmitComponent from "../Common/FormComponents/SumitComponent";
-import { useLocation, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import InputComponent from "../Common/FormComponents/InputComponent";
 import { useEffect, useState } from "react";
 import SelectComponent from "../Common/FormComponents/SelectComponent";
@@ -11,11 +10,13 @@ import { useQuery } from "@tanstack/react-query";
 import vendorService from "../../services/vendor/vendorService";
 import { AxiosResponse } from "axios";
 import poService from "../../services/po/poService";
+import { useProjectSelectData } from "../../hooks/useProjectSelectData";
+import { handleApiError } from "../../utils/apiUtils";
 
 const PoForm = () => {
   const { id } = useParams();
   const isEdit = !!id;
-  const { state } = useLocation();
+  const navigate = useNavigate();
   const [editPo, setEditPo] = useState<PoFormProps>();
   const [includeGST, setIncludeGST] = useState(false);
   const [subTotal, setSubTotal] = useState(0);
@@ -74,7 +75,7 @@ const PoForm = () => {
           setIgstPercentage(res.data.igst);
           setCgstPercentage(res.data.cgst);
           setSgstPercentage(res.data.sgst);
-          setIncludeGST(cgstPercentage >= 1 ? true : false);
+          setIncludeGST(true);
         });
     }
   }, [isEdit]);
@@ -95,42 +96,49 @@ const PoForm = () => {
   };
 
   const handlePoFormSubmit = (data: PoFormProps) => {
-    const PoData = {
+    const PoData: PoFormProps = {
       ...data,
       cgst: cgstPercentage,
       sgst: sgstPercentage,
       igst: igstPercentage,
       totalAmount: parseFloat(totalAmount),
       subTotal: subTotal,
-      project: state.project._id || editPo?.project,
     };
-if(isEdit){
-console.log(PoData)
-}else{
-  poService
-  .create(PoData)
-  .then((res: AxiosResponse) => console.log(res.data));
-};
-}
-   console.log(editPo)
+    if (isEdit) {
+      poService
+        .update({ _id: id, ...PoData })
+        .then((res: AxiosResponse<PoModelProps>) => {
+          navigate(`/accounts/purchaseorder/view/${res.data._id}`);
+        })
+        .catch((err: any) => handleApiError(err));
+    } else {
+      poService
+        .create(PoData)
+        .then((res: AxiosResponse) =>
+          navigate(`/accounts/purchaseorder/view/${res.data._id}`)
+        )
+        .catch((err: any) => handleApiError(err));
+    }
+  };
 
   return (
     <>
       <div className="container">
-        {!isEdit && (
-          <div className="row">
-            <div className="col-md-12">
-              <Header
-                lable={`Purchase Order for - ${state.project.projectName}`}
-              />
-            </div>
-          </div>
-        )}
         <form onSubmit={handleSubmit(handlePoFormSubmit)}>
           <div className="row">
             <table className="">
               <tbody>
                 <tr>
+                  <td>
+                    <SelectComponent
+                      register={register}
+                      label="Project"
+                      name="project"
+                      error={errors.project}
+                      options={useProjectSelectData()}
+                      defaultValue={editPo?.project}
+                    />
+                  </td>
                   <td>
                     <InputComponent
                       register={register}

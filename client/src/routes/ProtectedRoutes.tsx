@@ -39,11 +39,12 @@ import ContractorInfo from "../components/Contractors/ContractorInfo";
 import ContractorStatus from "../components/Contractors/ContractorStatus";
 import PoForm from "../components/PurchaseOrders/PoForm";
 import PoModel from "../components/PurchaseOrders/PoModel";
+import VoucherModel from "../components/Vouchers/VoucherModel";
+import Voucher from "../components/Vouchers/Voucher";
 
 const ProtectedRoutes = () => {
   const isAdmin = getUserRole() === "admin";
   const allowedRoutes = getAllowedRoutes();
-  console.log(allowedRoutes)
   if (!isLoggedIn()) {
     // If no token or decoded user information, navigate to the login page
     return (
@@ -131,6 +132,13 @@ const ProtectedRoutes = () => {
                 <Route path="new" element={<PoForm />} />
                 <Route path="edit/:id" element={<PoForm />} />
                 <Route path="view/:id" element={<PoModel />} />
+              </Route>
+
+              <Route path="voucher">
+                <Route index element={<PoList />} />
+                <Route path="new" element={<Voucher />} />
+                <Route path="edit/:id" element={<Voucher />} />
+                <Route path="view/:id" element={<VoucherModel />} />
               </Route>
 
               <Route path="status" element={<AccountsStatus />} />

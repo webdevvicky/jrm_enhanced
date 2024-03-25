@@ -1,114 +1,118 @@
-import { AxiosResponse } from "axios";
-import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import voucherService from "../../services/voucher/voucherService";
-import { handleApiError } from "../../utils/apiUtils";
-import { format } from "date-fns";
+import voucherModelService from "../../services/voucher/voucherModelService";
+import { AxiosResponse } from "axios";
 import Loader from "../Common/Loader/Loader";
+import { handleApiError } from "../../utils/apiUtils";
+import VoucherHistory from "./VoucherHistory";
+import { formatDate } from "../../utils/dateConvertionUtils";
 
 const VoucherModel = () => {
   const { id } = useParams();
   const [voucher, setVoucher] = useState<VoucherModelProps>();
+  const [vouchersHistory, setVouchersHistory] = useState<VoucherModelProps[]>(
+    []
+  );
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
 
   useEffect(() => {
-    voucherService
-      .getById<VoucherModelProps>(`${id}`)
+    voucherModelService
+      .getById(`${id}`)
       .then((res: AxiosResponse) => {
-        setVoucher(res.data);
+        setVoucher(res.data.currentVoucher);
+        setVouchersHistory(res.data.previousVouchers);
+
+        setIsLoading(false);
       })
       .catch((err: any) => {
         handleApiError(err);
+        setIsError(true);
       });
-  }, []);
+  }, [id]);
+
+  if (isLoading) {
+    return <Loader />;
+  }
+  if (isError) {
+    return <Loader isError />;
+  }
 
   return (
-    <div>
-      {!voucher && <Loader />}
-      {voucher && (
-        <div className=" container  printmodel">
-          <div className="">
-            <table className=" table table-bordered border-primary  ">
-              <thead>
-                <tr className=" text-center">
-                  <th colSpan={2}>JRM CONSTRUCTION</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Name : {voucher?.receiverName}</td>
-                  <td>Voucher No : {voucher?.voucherNumber}</td>
-                </tr>
-                <tr>
-                  <td>
-                    Site Name :{" "}
-                    {`Mr.${voucher?.clientName} - ${voucher?.projectName}`}
-                  </td>
-                  <td>
-                    Date :
-                    {voucher?.voucherDate
-                      ? format(new Date(voucher.voucherDate), "dd/MM/yyyy")
-                      : ""}
-                  </td>
-                </tr>
-                <tr>
-                  <td colSpan={2}>
-                    Payment Description : {voucher?.description}
-                  </td>
-                </tr>
-                <tr className=" text-center ">
-                  <td>TotalPayment</td>
-                  <td rowSpan={2} className=" align-middle ">
-                    <div className=" ">
-                      Payment Mode : {voucher?.paymentMethod}
-                    </div>
-                  </td>
-                </tr>
-                <tr className=" text-center ">
-                  <td>{voucher?.paymentAmount}</td>
-                </tr>
-                <tr>
-                  <td colSpan={2} className=" text-center ">
-                    <div className=" d-flex  justify-content-between   mb-0 pb-0">
-                      <ul className=" list-unstyled ">
-                        <li className=" mb-2">Print by</li>
-                        <li>{voucher?.printedByName}</li>
-                        <li>{voucher?.printedById}</li>
-                        <li>Name & Sign </li>
-                      </ul>
+    <>
+      <div className=" container bg-white  rounded-3 py-3 ">
+        <table className=" table table-bordered   border-primary ">
+          <thead>
+            <tr>
+              <th colSpan={3} className=" text-center">
+                JRM CONSTRUCTION - {voucher?.type}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td className=" w-50">Name : {voucher?.name}</td>
+              <td className=" text-end w-25">Voucher No</td>
+              <td className=" w-25"> {voucher?.voucherNumber}</td>
+            </tr>
+            <tr>
+              <td className=" w-50">
+                Project Name : {voucher?.project.projectName}
+              </td>
+              <td className=" text-end w-25">Date</td>
+              <td className=" w-25"> {formatDate(voucher?.date)}</td>
+            </tr>
+            <tr>
+              <td colSpan={3} className=" h-50">
+                Description : {voucher?.description}
+              </td>
+            </tr>
+            <tr className=" text-center">
+              <td>Total Payment</td>
+              <td>Payable Amount</td>
+              <td>Payment Mode</td>
+            </tr>
+            <tr className=" text-center">
+              <td>{voucher?.totalAmount}</td>
+              <td>{voucher?.payableAmount}</td>
+              <td>{voucher?.paymentMode}</td>
+            </tr>
+            <tr className=" text-center">
+              <td colSpan={3}>
+                <div className=" d-flex justify-content-around ">
+                  <div className="  ">
+                    <span className=" fw-bold   ">
+                      {voucher?.createdBy?.name}
+                    </span>
+                    <br />
+                    <span>Created By</span>
+                  </div>
+                  <div>
+                    <span className=" fw-bold ">
+                      {voucher?.verifiedBy?.name}
+                    </span>
+                    <br />
+                    <span>Verified By </span>
+                  </div>
+                  <div>
+                    <span className=" fw-bold ">
+                      {voucher?.approvedBy?.name}
+                    </span>
+                    <br />
+                    <span>Approved By</span>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-                      <div>
-                        <ul className=" list-unstyled ">
-                          <li className=" mb-2">Print by</li>
-                          <li>{voucher?.printedByName}</li>
-                          <li>{voucher?.printedById}</li>
-                          <li>Name & Sign </li>
-                        </ul>
-                      </div>
-                      <div>
-                        <ul className=" list-unstyled ">
-                          <li className=" mb-2">Print by</li>
-                          <li>{voucher?.printedByName}</li>
-                          <li>{voucher?.printedById}</li>
-                          <li>Name & Sign </li>
-                        </ul>
-                      </div>
-                      <div>
-                        <ul className=" list-unstyled ">
-                          <li className=" mb-2">Print by</li>
-                          <li>{voucher?.printedByName}</li>
-                          <li>{voucher?.printedById}</li>
-                          <li>Name & Sign </li>
-                        </ul>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-    </div>
+      <div className=" mt-3">
+        <VoucherHistory vouchers={vouchersHistory} />
+      </div>
+    </>
   );
 };
 

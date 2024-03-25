@@ -31,7 +31,7 @@ export const convertMongoDate = (utcDate: string): string => {
   return indianDate;
 };
 
-
+// for giving date as inputr in input fields
 export const dateConvert = (mongoDBDateString: string | undefined): string | undefined => {
     if (mongoDBDateString) {
       return mongoDBDateString.toString().split('T')[0];
@@ -39,6 +39,20 @@ export const dateConvert = (mongoDBDateString: string | undefined): string | und
     return undefined;
   };
 
+
+  // for showing date in information
+
+  export const formatDate = (mongoDBDateString: string | undefined): string | undefined => {
+    if (mongoDBDateString) {
+        const parts = mongoDBDateString.split('T')[0].split('-');
+        if (parts.length === 3) {
+            const [year, month, day] = parts;
+            // Rearrange the parts and join with '-'
+            return `${day}-${month}-${year}`;
+        }
+    }
+    return undefined;
+};
 
   export const calculateDaysDifference = (startDate: Date, endDate: Date): number => {
     const timeDifference = endDate.getTime() - startDate.getTime();

@@ -1,10 +1,10 @@
 import { useParams } from "react-router-dom";
 
 import { format } from "date-fns";
-import poService from "../../services/po/poService";
 import { useQuery } from "@tanstack/react-query";
 import { AxiosResponse } from "axios";
 import Loader from "../Common/Loader/Loader";
+import poModelService from "../../services/po/poModelService";
 
 const PoModel = () => {
   const { id } = useParams();
@@ -16,17 +16,19 @@ const PoModel = () => {
   } = useQuery({
     queryKey: ["unApprovedPoList", "unVerifiPoList"],
     queryFn: async () => {
-      const res: AxiosResponse<PoModelProps> = await poService.getById(`${id}`);
+      const res: AxiosResponse<PoModelProps> = await poModelService.getById(`${id}`);
       return res.data;
     },
   });
 
-  if (isLoading) {
+  if (isLoading || !po?._id) {
     return <Loader />;
   }
   if (isError) {
     return <Loader isError />;
   }
+
+  console.log(po)
   return (
     <>
       {po? (

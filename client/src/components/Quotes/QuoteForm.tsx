@@ -67,7 +67,7 @@ const QuoteForm = () => {
         .catch((err: any) => {
           handleApiError(err);
         });
-      console.log("postinfg");
+     
     } else {
       const UpdatedData: NewQuoteProps = {
         ...data,
@@ -87,7 +87,7 @@ const QuoteForm = () => {
           handleApiError(err);
         });
 
-      console.log("first");
+     
     }
   };
 

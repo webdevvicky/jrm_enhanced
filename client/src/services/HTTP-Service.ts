@@ -34,7 +34,7 @@ class Httpservice{
         }).then((response) => {
             controller.abort(); // Abort the request after it's completed
             return response;
-        });
+        })
     }
 
     create<T>(entity :T){

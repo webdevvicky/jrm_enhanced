@@ -13,6 +13,7 @@
   maxlen?:number;
   isNumber?:boolean;
   defaultValue?:any
+  isDisabled?:boolean
  }
 
 
@@ -82,6 +83,11 @@ export interface FloatingInputProps<T extends FieldValues> {
     projectName: string;
   }
 
+  export interface VendorOption {
+    _id: string 
+    name: string;
+  }
+
   
   export interface EmployeeOption{
     _id:string;
@@ -109,6 +115,7 @@ export interface FloatingInputProps<T extends FieldValues> {
     error: any;
     defaultValue?:any
     notRequired?:boolean
+    isDisabled?:boolean
   }
   
  

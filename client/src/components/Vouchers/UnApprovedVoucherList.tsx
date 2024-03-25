@@ -10,6 +10,8 @@ import RejectButton from "../Common/AuthButtons/RejectButton";
 import DeleteButton from "../Common/AuthButtons/DeleteButton";
 import poService from "../../services/po/poService";
 import { isAdmin } from "../../utils/auth";
+import voucherApprovelService from "../../services/voucher/voucherApprovelService";
+import voucherService from "../../services/voucher/voucherService";
 
 const UnApprovedPoList = () => {
   const navigate = useNavigate();
@@ -19,29 +21,29 @@ const UnApprovedPoList = () => {
     isLoading,
 
     isError,
-    data: unApprovedPoList = [],
+    data: unApprovedVoucherList = [],
   } = useQuery({
-    queryKey: ["unApprovedPoList", "unVerifiPoList"],
+    queryKey: ["unApprovedVoucherList"],
     queryFn: async () => {
-      const res: AxiosResponse<UnApprovedPoProps[]> =
-        await poApprovelService.getall();
+      const res: AxiosResponse<UnApprovedVoucherProps[]> =
+        await voucherApprovelService.getall();
       return res.data;
     },
   });
 
   async function handleApprovel(id: string) {
     const upadated = { _id: id, isApproved: true };
-    await poApprovelService.update(upadated);
+    await voucherApprovelService.update(upadated);
     await refetch();
   }
 
   async function handleReject(id: string) {
     const upadated = { _id: id, isRejected: true };
-    await poApprovelService.update(upadated);
+    await voucherService.update(upadated);
     await refetch();
   }
   async function handleDelete(id: string) {
-    await poService.delete(id);
+    await voucherService.delete(id);
     await refetch();
   }
 
@@ -49,11 +51,14 @@ const UnApprovedPoList = () => {
     return <Loader />;
   }
 
-  if (!Array.isArray(unApprovedPoList) || unApprovedPoList.length === 0) {
+  if (
+    !Array.isArray(unApprovedVoucherList) ||
+    unApprovedVoucherList.length === 0
+  ) {
     if (isAdmin()) {
       return null;
     }
-    return <div>No unapproved purchase orders found.</div>;
+    return <div>No unapproved Vouchers orders found.</div>;
   }
 
   if (isError) {
@@ -66,9 +71,10 @@ const UnApprovedPoList = () => {
         <thead>
           <tr>
             <th>S.no</th>
-            <th>PO No</th>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Voucher No</th>
             <th>Project Name</th>
-            <th>Stage</th>
             <th>View</th>
             <th>Edit</th>
             <th>Reject</th>
@@ -77,42 +83,44 @@ const UnApprovedPoList = () => {
           </tr>
         </thead>
         <tbody>
-          {unApprovedPoList?.map((po, index) => (
-            <tr key={po._id}>
+          {unApprovedVoucherList?.map((voucher, index) => (
+            <tr key={voucher._id}>
               <td>{index + 1}</td>
-              <td>{po.poNumber}</td>
-              <td>{po.project?.name}</td>
-              <td>{po.stage}</td>
+              <td>{voucher.date}</td>
+              <td>{voucher.type}</td>
+              <td>{voucher.voucherNumber}</td>
+              <td>{voucher.project.projectName}</td>
+
               <td>
-                <Link to={`/accounts/purchaseorder/view/${po._id}`}>
+                <Link to={`/accounts/voucher/view/${voucher._id}`}>
                   <FileEarmark size={30} />
                 </Link>
               </td>
               <td>
                 <EditButton
-                  isRejected={po.isRejected}
+                  isRejected={voucher.isRejected}
                   onClick={() =>
-                    navigate(`/accounts/purchaseorder/edit/${po._id}`)
+                    navigate(`/accounts/voucher/edit/${voucher._id}`)
                   }
                 />
               </td>
               <td>
                 <RejectButton
-                  isRejected={po.isRejected}
-                  isApproved={po.isApproved}
-                  onClick={() => handleReject(po._id)}
+                  isRejected={voucher.isRejected}
+                  isApproved={voucher.isApproved}
+                  onClick={() => handleReject(voucher._id)}
                 />
               </td>
               <td>
                 <ApprovelButton
-                  isApproved={po.isApproved}
-                  onClick={() => handleApprovel(po._id)}
+                  isApproved={voucher.isApproved}
+                  onClick={() => handleApprovel(voucher._id)}
                 />
               </td>
               <td>
                 <DeleteButton
-                  isApproved={po.isApproved}
-                  onClick={() => handleDelete(po._id)}
+                  isApproved={voucher.isApproved}
+                  onClick={() => handleDelete(voucher._id)}
                 />
               </td>
             </tr>

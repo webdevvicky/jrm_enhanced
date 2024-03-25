@@ -13,7 +13,8 @@ const InputComponent = <T extends FieldValues>({
   id,
   maxlen,
   isNumber,
-
+  isDisabled,
+  defaultValue,
 }: InputProps<T>) => {
   const validationRules: Record<string, unknown> = {
     required: !notRequired,
@@ -47,8 +48,9 @@ const InputComponent = <T extends FieldValues>({
           // placeholder={`Enter ${label}` || placeholder}
           {...register(name, {
             ...validationRules,
-           
           })}
+          disabled={isDisabled}
+          value={defaultValue}
         />
 
         <div className="text-danger fs-6 ">

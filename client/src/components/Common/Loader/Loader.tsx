@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 
-interface LoaderProps{
-  isError?:boolean
+interface LoaderProps {
+  isError?: boolean;
 }
-const Loader = ({isError}:LoaderProps) => {
+const Loader = ({ isError }: LoaderProps) => {
   const [showError, setShowError] = useState(false || isError);
 
   useEffect(() => {
@@ -26,7 +26,7 @@ const Loader = ({isError}:LoaderProps) => {
           Error loading data. Please try again.
         </div>
       ) : (
-        <div className="spinner-border" role="status">
+        <div className="spinner-border text-white" role="status">
           <span className="visually-hidden">Loading...</span>
         </div>
       )}

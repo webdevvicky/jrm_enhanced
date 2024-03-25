@@ -1,6 +1,7 @@
 import ContractorStatus from "../Contractors/ContractorStatus";
 import PoStatus from "../PurchaseOrders/PoStatus";
 import VendorsStatus from "../Vendors/VendorsStatus";
+import VoucherStatus from "../Vouchers/VoucherStatus";
 
 const AccountsStatus = () => {
   return (
@@ -8,6 +9,7 @@ const AccountsStatus = () => {
       <VendorsStatus />
       <ContractorStatus />
       <PoStatus />
+      <VoucherStatus />
     </div>
   );
 };

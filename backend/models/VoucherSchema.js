@@ -1,27 +1,28 @@
 const mongoose = require('mongoose');
+const commonFields = require('./CommonFields');
+
+// Define the valid voucher types
+const validTypes = ['purchaseOrder', 'localPurchase', 'workOrder', 'labourPayment', 'pettyCash'];
 
 const VoucherSchema = new mongoose.Schema({
-        project: {  type: mongoose.Schema.Types.ObjectId,
-        ref: 'Project' },
-        voucherNumber:{ type:Number},
-        poNumber:{type:Number},
-        date: { type: Date, default: Date.now },
-        description: { type: String, required: true },
-        paymentAmount:{ type:Number},
-        paymentMode: { type: String, required: true },
-        createdBy: {  type: mongoose.Schema.Types.ObjectId,
-            ref: 'User' },
-        verifiedBy: {  type: mongoose.Schema.Types.ObjectId,
-                ref: 'User' },
-       ApprovedBy: {  type: mongoose.Schema.Types.ObjectId,
-        ref: 'User' },
-        isApproved:{type:Boolean,default:false},
-        isVerified:{type:Boolean,default:false},
-        isRejected:{type:Boolean,default:false},
-   
+  type: {
+    type: String,
+    required: true,
+    enum: validTypes 
+  },
+  name: { type: String },
+  project: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'Project' },
+  voucherNumber: { type: Number, required: true },
+  date: { type: Date, default: Date.now },
+  description: { type: String, required: true },
+  totalAmount: { type: Number, reqired: true },
+  payableAmount: { type: Number, reqired: true },
+  balanceAmount: { type: Number },
+  paymentMode: { type: String, required: true },
+  purchaseOrder: { type: mongoose.Schema.Types.ObjectId, ref: "PurchaseOrder" },
+  ...commonFields
+}, { timestamps: true });
 
-},{timestamps:true});
-
-const   Voucher = mongoose.model('Voucher', VoucherSchema);
+const Voucher = mongoose.model('Voucher', VoucherSchema);
 
 module.exports = Voucher;

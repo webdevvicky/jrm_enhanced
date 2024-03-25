@@ -11,6 +11,7 @@ const SelectComponent = <T extends FieldValues>({
   defaultValue = "",
   notRequired,
   emptyLabel,
+  isDisabled,
 }: SelectProps<T>) => {
   const [selected, setSelected] = useState<string>();
   return (
@@ -24,8 +25,11 @@ const SelectComponent = <T extends FieldValues>({
           className=" form-select form-control  py-3 "
           value={selected || defaultValue}
           onChange={(event) => setSelected(event.target.value || "")}
+          disabled={isDisabled}
         >
-          <option value={ ""}>{emptyLabel || "select an option"}</option>
+          <option value={""} disabled>
+            {emptyLabel || "select an option"}
+          </option>
           {options.map((option) => (
             <option value={option.value} key={option.value}>
               {option.option}

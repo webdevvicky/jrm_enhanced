@@ -1,19 +1,19 @@
 import { useEffect, useState } from "react";
 import { AxiosResponse } from "axios";
-import projectService from "../services/project/projectService";
-import { FormSelectProps, ProjectOption } from "../interfaces/CommonProps";
+import { FormSelectProps, VendorOption } from "../interfaces/CommonProps";
+import vendorService from "../services/vendor/vendorService";
 
-export const useProjectSelectData = () => {
+export const useVendorSelectData = () => {
   const [selectOptions, setSelectOptions] = useState<FormSelectProps[]>([]);
 
   useEffect(() => {
-    projectService
-      .getall<ProjectOption[]>()
+    vendorService
+      .getall<VendorOption[]>()
       .then((res: AxiosResponse) => {
         const options: FormSelectProps[] = res.data.map(
-          (project: ProjectOption) => ({
-            value: project._id,
-            option: project.projectName,
+          (vendor: VendorOption) => ({
+            value: vendor._id,
+            option: vendor.name,
           })
         );
         setSelectOptions(options);

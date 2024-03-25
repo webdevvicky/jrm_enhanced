@@ -8,12 +8,12 @@ import Header from "../Common/Header/Header";
 import { useQuery } from "@tanstack/react-query";
 import { AxiosResponse } from "axios";
 import poUsingProjectService from "../../services/po/poUsingProjectService";
-import Loader from "../Common/Loader/Loader";
+import { formatDate } from "../../utils/dateConvertionUtils";
 
 const PoList = () => {
   const [selectedProject, setSelectedProject] = useState<ProjectOption>();
   const { data: poList = [] } = useQuery({
-    queryKey: ["poList", selectedProject?._id],
+    queryKey: ["poList", selectedProject],
     queryFn: async () => {
       const res: AxiosResponse<PoListProps[]> =
         await poUsingProjectService.getById(
@@ -51,14 +51,15 @@ const PoList = () => {
             <div className="row">
               <Header lable="Purchase Order -Pending payment List" />
             </div>
+
             <PendingPoPayment projectId={selectedProject._id} />
+
             <div className="row">
               <Header lable="Purchase Order  List" />
             </div>
             <div className=" bg-white p-3 border rounded-3 ">
-              <table className="table  table-borderless ">
+              <table className="table  table-borderless  text-center">
                 <thead>
-                  {" "}
                   <tr>
                     <th>S No</th>
                     <th>Po No</th>
@@ -74,7 +75,7 @@ const PoList = () => {
                     <tr key={po._id}>
                       <td>{index + 1}</td>
                       <td>{po.poNumber}</td>
-                      <td>{po.date}</td>
+                      <td>{formatDate(po.date)}</td>
                       <td>{po.stage}</td>
                       <td>{po.vendor.name}</td>
                       <td>{po.totalAmount}</td>

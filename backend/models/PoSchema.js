@@ -36,7 +36,7 @@ const poSchema = new mongoose.Schema({
   ],
 
   vouchers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Voucher' }],
-  isPendingPayment:{type:Boolean, default:false}
+  isPendingPayment:{type:Boolean, default:true}
 });
 
 const PurchaseOrder = mongoose.model('PurchaseOrder', poSchema);

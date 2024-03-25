@@ -1,3 +1,3 @@
 import apidata from "../HTTP-Service";
 
-export default apidata("/purchase/pending");
+export default apidata("/purchaseorder/pendingpayment/project");

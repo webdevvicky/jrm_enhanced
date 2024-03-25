@@ -1,11 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { AxiosResponse } from "axios";
-import poService from "../../services/po/poService";
 import { PlusCircle } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import { dateConvert } from "../../utils/dateConvertionUtils";
 import Loader from "../Common/Loader/Loader";
-import poUsingProjectService from "../../services/po/poUsingProjectService";
+import poPendingPaymentService from "../../services/po/poPendingPaymentService";
 
 interface PendingPo {
   projectId: string;
@@ -20,7 +19,7 @@ const PendingPoPayment = ({ projectId }: PendingPo) => {
     queryKey: ["poPendingPaymentList", projectId],
     queryFn: async () => {
       const res: AxiosResponse<PoPendingPaymentProps[]> =
-        await poUsingProjectService.getById(projectId);
+        await poPendingPaymentService.getById(projectId);
       return res.data;
     },
   });
@@ -30,7 +29,6 @@ const PendingPoPayment = ({ projectId }: PendingPo) => {
   if (isLoading) {
     return <Loader />;
   }
-
   return (
     <div className=" bg-white border rounded-3  p-3 my-3">
       <table className="  table table-borderless  border-primary text-center">
@@ -54,10 +52,13 @@ const PendingPoPayment = ({ projectId }: PendingPo) => {
               <td>{dateConvert(po.date)}</td>
               <td>{po.stage}</td>
               <td>{po.totalAmount}</td>
-              <td>{po.payedAmount}</td>
+              <td>{po.payedAmount || 0}</td>
               <td>{po.balanceAmount}</td>
               <td>
-                <Link to={"/voucher/new"}>
+                <Link
+                  to={"/accounts/voucher/new"}
+                  state={{ type: "purchaseOrder", _id: po._id }}
+                >
                   <PlusCircle />
                 </Link>
               </td>

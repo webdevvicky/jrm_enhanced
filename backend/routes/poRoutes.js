@@ -1,9 +1,9 @@
 const express = require('express');
 const PurchaseOrder = require('../models/PoSchema');
 const router = express.Router();
-const Customer = require('../models/CustomerSchema');
 const setVerifiedByField = require('../middlewares/setVerifiedByField');
 const setApprovedByField = require ('../middlewares/setApprovedByField')
+const calculateTotalPayableAmount = require('../utils/calculationUtils')
 
 
 // new po
@@ -43,17 +43,87 @@ router.post("/", async (req, res) => {
 
 
 
+
+
 // get pending payment po
 
-router.get('/pendingpayment',async (req,res)=>{
-  try{
-      const pendingPaymentPos = await PurchaseOrder.find({isPendingPayment:false}).populate('vendor','name')
-  res.send(pendingPaymentPos)
-  
-    }catch(error){
+router.get('/pendingpayment/project/:id', async (req, res) => {
+  try {
+    const pendingPaymentPos = await PurchaseOrder.find({ project: req.params.id, isPendingPayment: true, isApproved: true });
+
+    // Map each purchase order to adhere to the PoPendingPaymentProps interface
+    const formattedPendingPaymentPos = await Promise.all(pendingPaymentPos.map(async (purchaseOrder) => {
+      // Calculate total payable amount from vouchers
+      const totalPayableAmountFromVouchers = await calculateTotalPayableAmount(purchaseOrder.vouchers);
+
+      // Calculate payedAmount and balanceAmount
+      const payedAmount = totalPayableAmountFromVouchers;
+      const balanceAmount = purchaseOrder.totalAmount - totalPayableAmountFromVouchers;
+
+      return {
+        poNumber: purchaseOrder.poNumber,
+        date: purchaseOrder.date,
+        stage: purchaseOrder.stage,
+        totalAmount: purchaseOrder.totalAmount,
+        payedAmount: payedAmount,
+        balanceAmount: balanceAmount,
+        _id: purchaseOrder._id
+      };
+    }));
+
+    res.send(formattedPendingPaymentPos);
+  } catch (error) {
     res.status(500).json({ error: error.message });
   }
-})
+});
+
+
+
+
+
+
+
+
+
+// for voucher 
+
+router.get('/pendingpayment/:id', async (req, res) => {
+  try {
+    const purchaseOrderId = req.params.id;
+
+    // Find the purchase order by ID and populate the vendor and vouchers fields
+    const purchaseOrder = await PurchaseOrder.findById(purchaseOrderId)
+    .populate('vouchers'); // Populate the vouchers array
+
+    if (!purchaseOrder) {
+      return res.status(404).json({ error: "Purchase order not found" });
+    }
+
+    // Calculate total payable amount from vouchers
+    const totalPayableAmountFromVouchers = purchaseOrder.vouchers.reduce((total, voucher) => {
+      return total + voucher.payableAmount;
+    }, 0);
+
+    // Calculate balance amount to pay
+    const balanceAmountToPay = purchaseOrder.totalAmount - totalPayableAmountFromVouchers;
+
+    // Extract relevant details for response
+    const response = {
+      vendor: purchaseOrder.vendor,
+      project:purchaseOrder.project,
+      // poNumber: purchaseOrder.poNumber,
+      totalAmount: purchaseOrder.totalAmount,
+      totalPaidAmount: totalPayableAmountFromVouchers,
+      balanceAmountToPay: balanceAmountToPay,
+      vouchers: purchaseOrder.vouchers
+    };
+
+    res.json(response);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 
 
 
@@ -69,6 +139,8 @@ res.send(unApprovedPos)
     res.status(500).json({ error: error.message });
   }
 })
+
+
 
 //get Approvel Po
 router.get('/approvel',async (req,res)=>{
@@ -95,9 +167,11 @@ router.patch('/verify/:id',setVerifiedByField,async(req,res)=>{
 
 
 
+// only for approvel 
+
 router.patch('/approvel/:id',setApprovedByField,async(req,res)=>{
   try{
-    console.log(req.body)
+    
     const UpdateApprovel = await PurchaseOrder.findByIdAndUpdate(req.params.id,req.body)
     res.send(UpdateApprovel)
   }catch(error){
@@ -110,7 +184,7 @@ router.patch('/approvel/:id',setApprovedByField,async(req,res)=>{
 
 router.get('/',async (req,res)=>{
   try{
-        const po = await PurchaseOrder.find()
+        const po = await PurchaseOrder.find({isApproved:true})
 
         res.send(po)
   }catch(err){
@@ -123,6 +197,8 @@ router.get('/',async (req,res)=>{
 router.patch("/:id", async (req,res)=>{
   try{
     const {id}=req.params
+    req.body.isRejected = false
+    
     const updatePo = await PurchaseOrder.findByIdAndUpdate(id,req.body,req.body, { new: true, runValidators: true })
     if (!updatePo) {
       return res.status(404).send({ error: 'Po not found' });
@@ -148,7 +224,7 @@ router.get('/:id',async (req,res)=>{
 
 router.get('/view/:id',async (req,res)=>{
   try{
-const po = await PurchaseOrder.findById(req.params.id).populate('vendor','name address').populate('project','projectName').populate('approvedBy verifiedBy createdBy','name')
+const po = await PurchaseOrder.findById(req.params.id).populate('vendor project createdBy approvedBy verifiedBy','name projectName')
 res.send(po)
   }catch(error){
     res.status(500).json({ error: error.message });
@@ -159,17 +235,13 @@ res.send(po)
 
 
 
- 
-  
-  
-  
 
 // get po using project wize
 
 router.get('/project/:id', async (req, res) => {
   try {
    
-    const PoList = await PurchaseOrder.find({ project: req.params.id });
+    const PoList = await PurchaseOrder.find({ project: req.params.id ,isApproved:true,isPendingPayment:false}).populate('vendor','name')
     res.send(PoList)
    
   } catch (error) {
@@ -178,8 +250,7 @@ router.get('/project/:id', async (req, res) => {
 });
 
 
-
-
+// for getting previous purchase items
 
   router.get("/description/:searchTerm", async (req, res) => {
     try {
