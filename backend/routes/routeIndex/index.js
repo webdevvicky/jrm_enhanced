@@ -16,6 +16,7 @@ const EnquiryQuoteRoutes = require('../enquiryQuoteRoutes')
 const DesignsRoutes = require('../designsRoutes')
 const ProjectRoutes = require('../ProjectRoutes')
 const VoucherRoutes = require('../voucherRoutes')
+const WorkOrderRoutes = require('../workOrderRoutes')
 
 // not protected route , it did't ask for token -- only for logins 
 router.use('/login', auth)
@@ -38,6 +39,8 @@ router.use('/enquiry',EnquiryRoutes)
 router.use('/enquiry/api/quote',EnquiryQuoteRoutes)
 router.use('/designs',DesignsRoutes)
 router.use('/voucher',VoucherRoutes)
+router.use('/workorder', WorkOrderRoutes)
+
 
 
 

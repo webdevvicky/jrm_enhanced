@@ -4,7 +4,7 @@ import { InputProps } from "../../../interfaces/CommonProps";
 const InputComponent = <T extends FieldValues>({
   type,
   name,
-  placeholder,
+
   label,
   register,
   error,

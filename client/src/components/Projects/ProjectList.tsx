@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import enquiryBookingServices from "../../services/enquiry/enquiryBookingServices";
 import { AxiosResponse } from "axios";
 import { handleApiError } from "../../utils/apiUtils";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link,  useNavigate } from "react-router-dom";
 import Header from "../Common/Header/Header";
 import { BuildingAdd, FileText, PlusCircleDotted } from "react-bootstrap-icons";
 

@@ -5,10 +5,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { FileEarmark, PlusCircleDotted } from "react-bootstrap-icons";
 import EditButton from "../Common/AuthButtons/EditButton";
 import Header from "../Common/Header/Header";
-import contractorApprovelService from "../../services/contractor/contractorApprovelService";
 import contractorListService from "../../services/contractor/contractorListService";
 import Loader from "../Common/Loader/Loader";
-import { useQuery } from "@tanstack/react-query";
 
 const ContractorList: React.FC = () => {
   const [contractorList, setContractorsList] = useState<ContractorListProps[]>(

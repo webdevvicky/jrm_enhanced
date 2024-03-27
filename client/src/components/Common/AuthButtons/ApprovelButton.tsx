@@ -1,11 +1,6 @@
 import React from "react";
 import { isAdmin } from "../../../utils/auth";
-import {
-  FileCheck,
-  FileCheckFill,
-  PatchCheck,
-  PersonCheckFill,
-} from "react-bootstrap-icons";
+import { PatchCheck, PersonCheckFill } from "react-bootstrap-icons";
 
 interface AdminBtnProps {
   onClick?: () => void;

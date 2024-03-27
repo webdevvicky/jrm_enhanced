@@ -11,7 +11,7 @@ interface selected {
   };
 }
 const QuoationList = ({ selectedProject }: selected) => {
-  const [quoteList, setQuoteList] = useState<QuoteListProps[]>([]);
+  const [quoteList, setQuoteList] = useState<QuoteModelProps[]>([]);
   useEffect(() => {
     quoteUsingProject
       .getById(selectedProject._id)

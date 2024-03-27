@@ -1,9 +1,5 @@
-import React from 'react'
-
 const GstPage = () => {
-  return (
-    <div>GstPage</div>
-  )
-}
+  return <div>GstPage</div>;
+};
 
-export default GstPage
+export default GstPage;

@@ -6,7 +6,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { FileEarmark, PlusCircleDotted } from "react-bootstrap-icons";
 import EditButton from "../Common/AuthButtons/EditButton";
 import Header from "../Common/Header/Header";
-import { tr } from "date-fns/locale";
 
 const VendorsList: React.FC = () => {
   const [vendors, setVendors] = useState<VendorListProps[]>([]);

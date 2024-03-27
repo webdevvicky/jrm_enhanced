@@ -2,8 +2,11 @@ const express = require('express');
 const router = express.Router();
 const Voucher = require('../models/VoucherSchema');
 const PurchaseOrder = require('../models/PoSchema')
+const WorkOrder = require('../models/WorkOrderSchema')
 const setVerifiedByField = require('../middlewares/setVerifiedByField')
 const setApprovedByField = require('../middlewares/setApprovedByField')
+
+
 
 // CREATE - Create a new voucher
 router.post('/', async (req, res) => {
@@ -26,6 +29,9 @@ router.post('/', async (req, res) => {
       res.status(400).send(error);
     }
   });
+
+
+
   
 // READ - Get all vouchers
 router.get('/', async (req, res) => {
@@ -36,6 +42,9 @@ router.get('/', async (req, res) => {
     res.status(500).send(error);
   }
 });
+
+
+
 
 // READ - Get a single voucher by ID
 router.get('/:id', async (req, res) => {
@@ -52,27 +61,23 @@ router.get('/:id', async (req, res) => {
 
 
 
+
+
 // UPDATE - Update a voucher by ID
 router.patch('/:id', async (req, res) => {
-  // const updates = Object.keys(req.body);
-  // const allowedUpdates = ['name', 'project', 'voucherNumber', 'date', 'description', 'totalAmount', 'payableAmount', 'paymentMode', 'purchaseOrder', 'isApproved', 'isVerified', 'isRejected'];
-  // const isValidOperation = updates.every(update => allowedUpdates.includes(update));
-
-  // if (!isValidOperation) {
-  //   return res.status(400).send({ error: 'Invalid updates!' });
-  // }
-  console.log(req.body)
-
-  try {
+try {
     const voucher = await Voucher.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
     if (!voucher) {
       return res.status(404).send({ message: 'Voucher not found' });
     }
     res.send(voucher);
-  } catch (error) {
+} catch (error) {
     res.status(400).send(error);
   }
 });
+
+
+
 
 // DELETE - Delete a voucher by ID
 router.delete('/:id', async (req, res) => {
@@ -86,6 +91,7 @@ router.delete('/:id', async (req, res) => {
     res.status(500).send(error);
   }
 });
+
 
 
 
@@ -103,6 +109,10 @@ router.get('/verify/list',async (req,res)=>{
 })
 
 
+
+
+
+
 router.patch('/verify/list/:id', setVerifiedByField, async(req,res)=>{
   try{
 const voucher = await Voucher.findByIdAndUpdate(req.params.id,req.body)
@@ -111,6 +121,12 @@ res.status(200).json(voucher)
     res.status(500).json({ error: error.message });
   }
 } )
+
+
+
+
+
+
 
 
 router.get('/approve/list',async (req,res)=>{
@@ -123,6 +139,18 @@ router.get('/approve/list',async (req,res)=>{
     res.status(500).json({ error: error.message });
   }
 })
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -143,60 +171,91 @@ router.patch('/approve/list/:id',setApprovedByField, async (req, res) => {
       return res.status(400).json({ error: "Voucher has already been approved" });
     }
 
-    // Retrieve the purchase order associated with the voucher
-    const purchaseOrder = await PurchaseOrder.findById(voucher.purchaseOrder).populate('vouchers');
+  //using swith for handle multiple types of vouchers approvel 
+  switch (voucher.type){
 
-    if (!purchaseOrder) {
-      return res.status(404).json({ error: "Purchase order not found" });
-    }
+   case 'purchaseOrder':
 
-    // Calculate total payable amount from vouchers
-    const totalPayableAmountFromVouchers = purchaseOrder.vouchers.reduce((total, voucher) => {
-      return total + (voucher.isApproved ? voucher.payableAmount : 0);
-    }, 0);
+                  
+          // Retrieve the purchase order associated with the voucher
+          const purchaseOrder = await PurchaseOrder.findById(voucher.purchaseOrder).populate('vouchers');
 
-    // Calculate total payable amount after approving the current voucher
-    const updatedTotalPayableAmount = totalPayableAmountFromVouchers + voucher.payableAmount;
+          if (!purchaseOrder) {
+            return res.status(404).json({ error: "Purchase order not found" });
+          }
 
-    // Check if approving the current voucher would exceed the total amount
-    if (updatedTotalPayableAmount > purchaseOrder.totalAmount) {
-      return res.status(400).json({ error: "Approving this voucher would exceed the total amount" });
-    }
+          // Calculate total payable amount from vouchers
+          const totalPayableAmountFromVouchers = purchaseOrder.vouchers.reduce((total, voucher) => {
+            return total + (voucher.isApproved ? voucher.payableAmount : 0);
+          }, 0);
 
+          // Calculate total payable amount after approving the current voucher
+          const updatedTotalPayableAmount = totalPayableAmountFromVouchers + voucher.payableAmount;
+
+          // Check if approving the current voucher would exceed the total amount
+          if (updatedTotalPayableAmount > purchaseOrder.totalAmount) {
+            return res.status(400).json({ error: "Approving this voucher would exceed the total amount" });
+          }
+
+          // Update the voucher status to approved
+          voucher.isApproved = true;
+          voucher.approvedBy = req.body.approvedBy;
+          // Save the updated voucher
+          await voucher.save();
+
+          // Update the balance amount for the current voucher
+          const balanceAmount = purchaseOrder.totalAmount - updatedTotalPayableAmount;
+          voucher.balanceAmount = balanceAmount;   
+          await voucher.save();
+
+          // Push the ID of the approved voucher into the purchase order's vouchers array
+          purchaseOrder.vouchers.push(voucher._id);
+
+          // Save the updated purchase order to update the vouchers array in the database
+          await purchaseOrder.save();
+
+          // Check if pending payment becomes 0 and update isPendingPayment accordingly
+          if (purchaseOrder.totalAmount === updatedTotalPayableAmount) {
+            purchaseOrder.isPendingPayment = false;
+            await purchaseOrder.save();
+          }
+          // Respond with the updated purchase order
+          res.json(purchaseOrder);
+
+  break;
+
+  default :
+      
     // Update the voucher status to approved
     voucher.isApproved = true;
-
+    voucher.approvedBy = req.body.approvedBy;
     // Save the updated voucher
     await voucher.save();
 
-    // Update the balance amount for the current voucher
-    const balanceAmount = purchaseOrder.totalAmount - updatedTotalPayableAmount;
-    voucher.balanceAmount = balanceAmount;
+    const voucherBalanceAmount = voucher.totalAmount - voucher.payableAmount;
+    voucher.balanceAmount = voucherBalanceAmount;   
     await voucher.save();
-
-    // Push the ID of the approved voucher into the purchase order's vouchers array
-    purchaseOrder.vouchers.push(voucher._id);
-
-    // Save the updated purchase order to update the vouchers array in the database
-    await purchaseOrder.save();
-
-    // Check if pending payment becomes 0 and update isPendingPayment accordingly
-    if (purchaseOrder.totalAmount === updatedTotalPayableAmount) {
-      purchaseOrder.isPendingPayment = false;
-      await purchaseOrder.save();
-    }
-
-    // Respond with the updated purchase order
-    res.json(purchaseOrder);
+  break;
+}
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
 
+
+
+
+
+
+
+
+
+
+
 router.get('/view/:id', async (req, res) => {
   try {
-    const voucher = await Voucher.findById(req.params.id).populate('createdBy approvedBy verifiedBy project purchaseOrder', 'name vouchers  projectName');
+    const voucher = await Voucher.findById(req.params.id).populate('createdBy approvedBy verifiedBy project purchaseOrder workOrder', 'name vouchers  projectName');
     if (!voucher) {
       return res.status(404).send({error:"Voucher Not Found"});
     }
@@ -219,6 +278,25 @@ router.get('/view/:id', async (req, res) => {
       res.status(200).json({currentVoucher,previousVouchers});
 
       break;
+
+      case 'workOrder':
+
+      if (!voucher.workOrder) {
+        return res.status(404).send("Work Order Not Found");
+      }
+      const workOrderVouchers = await WorkOrder.findById(voucher.workOrder._id)
+      .populate('vouchers vendor', 'payableAmount balanceAmount date voucherNumber name')
+      .select('poNumber vouchers');
+      const currentWoVoucher = {
+        ...voucher.toObject(), // Convert to plain JavaScript object to modify properties
+        name: purchaseOrderVouchers.vendor.name,
+       
+      };
+      const previousWoVouchers =purchaseOrderVouchers.vouchers
+
+      res.status(200).json({currentVoucher:{...currentWoVoucher},previousVouchers:{...previousWoVouchers}});
+
+      break
 
       default:
 

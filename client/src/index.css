@@ -54,6 +54,10 @@ input[type=number] {
     body {
         -webkit-print-color-adjust: exact; /* For Chrome and Safari */
         color-adjust: exact; /* For Firefox */
+
+
+        font-size: 8px !important;
+        margin: 0 auto !important 
       }
       .printbtn{
         display: none;

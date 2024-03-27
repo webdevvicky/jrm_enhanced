@@ -36,8 +36,8 @@ const ArrayInput = <T extends {}>({
 
   // Use watch to get real-time changes
 
-  // @ts-ignore
-  const watchedFields = watch<Path<T>>(name, arrayFields);
+  //@ts-ignore
+  const watchedFields = watch<Path<T>>(name, multiplyFields);
 
   const calculateTotal = (fieldIndex: number) => {
     if (!multiplyFields) return 0;
@@ -49,7 +49,7 @@ const ArrayInput = <T extends {}>({
 
   return (
     <div>
-      <table className="table table-bordered border-primary-subtle">
+      <table className="table table-bordered border-primary-subtle text-center">
         <thead className=" text-center">
           <tr>
             <th>S.No</th>
@@ -82,7 +82,7 @@ const ArrayInput = <T extends {}>({
                 </td>
               ))}
               {multiplyFields && <td>{calculateTotal(index).toFixed(2)}</td>}
-              <td>
+              <td className="">
                 <div className="d-flex align-items-center">
                   <PlusSquare
                     size={"22px"}

@@ -6,7 +6,6 @@ import { handleApiError } from "../../utils/apiUtils";
 import Header from "../Common/Header/Header";
 import invoiceService from "../../services/invoice/invoiceService";
 import invoiceApprovelService from "../../services/invoice/invoiceApprovelService";
-import ConfirmationModal from "../Common/Confirmation/ConfirmationModal";
 import useConfirmation from "../../hooks/useConfirmation";
 import NewInvoice from "./NewInvoice";
 
@@ -151,14 +150,6 @@ const InvoiceApprovel = () => {
         </div>
       )}
       <div>{isEdit && <NewInvoice isEdit invoicedata={selectedInvoice} />}</div>
-      {/* Use ConfirmationModal */}
-      <ConfirmationModal
-        show={confirmation.show}
-        handleClose={confirmation.hideConfirmation}
-        handleConfirm={confirmation.onConfirm}
-        title={confirmation.title}
-        message={confirmation.message}
-      />
     </div>
   );
 };

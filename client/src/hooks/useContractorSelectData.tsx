@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { AxiosResponse } from "axios";
-import { FormSelectProps, VendorOption } from "../interfaces/CommonProps";
-import vendorService from "../services/vendor/vendorService";
+import { FormSelectProps } from "../interfaces/CommonProps";
+
 import contractorService from "../services/contractor/contractorService";
 
 interface ContractorOption {

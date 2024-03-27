@@ -1,15 +1,12 @@
-import React, { useEffect } from "react";
-import { useForm, useFieldArray, useWatch } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { Trash, ArrowUp, ArrowDown, PlusSquare } from "react-bootstrap-icons";
 
 const GSTForm = () => {
-  const { register, control, handleSubmit, setValue } = useForm();
+  const { register, control, handleSubmit } = useForm();
   const { fields, append, remove, move, insert } = useFieldArray({
     control,
     name: "items",
   });
-
-  const watchFields = useWatch({ control, name: "items" });
 
   // useEffect(() => {
   //   updateTotalAmount();

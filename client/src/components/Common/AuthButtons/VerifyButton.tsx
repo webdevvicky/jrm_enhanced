@@ -1,5 +1,5 @@
 import React from "react";
-import { getUserRole, hasVerifyAuth } from "../../../utils/auth";
+import {  hasVerifyAuth } from "../../../utils/auth";
 import { Check2, Check2All } from "react-bootstrap-icons";
 
 interface RejectBtnProps {

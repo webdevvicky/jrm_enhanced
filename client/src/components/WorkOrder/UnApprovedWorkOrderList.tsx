@@ -8,40 +8,39 @@ import ApprovelButton from "../Common/AuthButtons/ApprovelButton";
 import RejectButton from "../Common/AuthButtons/RejectButton";
 import DeleteButton from "../Common/AuthButtons/DeleteButton";
 import { isAdmin } from "../../utils/auth";
-import voucherApprovelService from "../../services/voucher/voucherApprovelService";
-import voucherService from "../../services/voucher/voucherService";
+import woApprovelService from "../../services/workOrder/woApprovelService";
+import woService from "../../services/workOrder/woService";
 
-const UnApprovedPoList = () => {
+const UnApprovedWorkOrderList = () => {
   const navigate = useNavigate();
 
   const {
     refetch,
     isLoading,
-
     isError,
-    data: unApprovedVoucherList = [],
+    data: unApprovedWoList = [],
   } = useQuery({
-    queryKey: ["unApprovedVoucherList"],
+    queryKey: ["unApprovedWoList"],
     queryFn: async () => {
-      const res: AxiosResponse<UnApprovedVoucherProps[]> =
-        await voucherApprovelService.getall();
+      const res: AxiosResponse<UnApprovedWorkOrderProps[]> =
+        await woApprovelService.getall();
       return res.data;
     },
   });
 
   async function handleApprovel(id: string) {
     const upadated = { _id: id, isApproved: true };
-    await voucherApprovelService.update(upadated);
+    await woApprovelService.update(upadated);
     await refetch();
   }
 
   async function handleReject(id: string) {
     const upadated = { _id: id, isRejected: true };
-    await voucherService.update(upadated);
+    await woApprovelService.update(upadated);
     await refetch();
   }
   async function handleDelete(id: string) {
-    await voucherService.delete(id);
+    await woService.delete(id);
     await refetch();
   }
 
@@ -49,14 +48,11 @@ const UnApprovedPoList = () => {
     return <Loader />;
   }
 
-  if (
-    !Array.isArray(unApprovedVoucherList) ||
-    unApprovedVoucherList.length === 0
-  ) {
+  if (!Array.isArray(unApprovedWoList) || unApprovedWoList.length === 0) {
     if (isAdmin()) {
       return null;
     }
-    return <div>No unapproved Vouchers orders found.</div>;
+    return <div>No unapproved Work orders found.</div>;
   }
 
   if (isError) {
@@ -69,10 +65,9 @@ const UnApprovedPoList = () => {
         <thead>
           <tr>
             <th>S.no</th>
-            <th>Date</th>
-            <th>Type</th>
-            <th>Voucher No</th>
+            <th>PO No</th>
             <th>Project Name</th>
+            <th>Contractor</th>
             <th>View</th>
             <th>Edit</th>
             <th>Reject</th>
@@ -81,44 +76,42 @@ const UnApprovedPoList = () => {
           </tr>
         </thead>
         <tbody>
-          {unApprovedVoucherList?.map((voucher, index) => (
-            <tr key={voucher._id}>
+          {unApprovedWoList?.map((wo, index) => (
+            <tr key={wo._id}>
               <td>{index + 1}</td>
-              <td>{voucher.date}</td>
-              <td>{voucher.type}</td>
-              <td>{voucher.voucherNumber}</td>
-              <td>{voucher.project.projectName}</td>
-
+              <td>{wo?.woNumber}</td>
+              <td>{wo?.project?.name}</td>
+              <td>{wo.contractor?.name}</td>
               <td>
-                <Link to={`/accounts/voucher/view/${voucher._id}`}>
+                <Link to={`/execution/workorder/view/${wo._id}`}>
                   <FileEarmark size={30} />
                 </Link>
               </td>
               <td>
                 <EditButton
-                  isRejected={voucher.isRejected}
+                  isRejected={wo.isRejected}
                   onClick={() =>
-                    navigate(`/accounts/voucher/edit/${voucher._id}`)
+                    navigate(`/execution/workorder/edit/${wo._id}`)
                   }
                 />
               </td>
               <td>
                 <RejectButton
-                  isRejected={voucher.isRejected}
-                  isApproved={voucher.isApproved}
-                  onClick={() => handleReject(voucher._id)}
+                  isRejected={wo.isRejected}
+                  isApproved={wo.isApproved}
+                  onClick={() => handleReject(wo._id)}
                 />
               </td>
               <td>
                 <ApprovelButton
-                  isApproved={voucher.isApproved}
-                  onClick={() => handleApprovel(voucher._id)}
+                  isApproved={wo.isApproved}
+                  onClick={() => handleApprovel(wo._id)}
                 />
               </td>
               <td>
                 <DeleteButton
-                  isApproved={voucher.isApproved}
-                  onClick={() => handleDelete(voucher._id)}
+                  isApproved={wo.isApproved}
+                  onClick={() => handleDelete(wo._id)}
                 />
               </td>
             </tr>
@@ -129,4 +122,4 @@ const UnApprovedPoList = () => {
   );
 };
 
-export default UnApprovedPoList;
+export default UnApprovedWorkOrderList;

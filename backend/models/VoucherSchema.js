@@ -19,6 +19,7 @@ const VoucherSchema = new mongoose.Schema({
   payableAmount: { type: Number, reqired: true },
   balanceAmount: { type: Number },
   paymentMode: { type: String, required: true },
+  workOrder:{type: mongoose.Schema.Types.ObjectId, ref: "WorkOrder" },
   purchaseOrder: { type: mongoose.Schema.Types.ObjectId, ref: "PurchaseOrder" },
   ...commonFields
 }, { timestamps: true });

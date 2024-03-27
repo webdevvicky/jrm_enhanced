@@ -4,7 +4,7 @@ import { AxiosResponse } from "axios";
 import ApprovelButton from "../Common/AuthButtons/ApprovelButton";
 import DeleteButton from "../Common/AuthButtons/DeleteButton";
 import Loader from "../Common/Loader/Loader";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { FileEarmark } from "react-bootstrap-icons";
 import designApprovelService from "../../services/designs/designApprovelService";
 import designService from "../../services/designs/designService";
@@ -20,7 +20,7 @@ interface DesignApprovelList {
 }
 
 const DesignStatus = () => {
-  const navigate = useNavigate();
+  
   const {
     isLoading,
     isError,

@@ -26,7 +26,7 @@ const NewEmployee = () => {
   } = useForm<Employee>();
 
   useEffect(() => {
-    if (id) {
+    if (isEdit) {
       userService
         .getById<Employee>(`${id}`)
         .then((res: AxiosResponse) => {
@@ -287,8 +287,8 @@ const NewEmployee = () => {
             <InputComponent
               register={register}
               label="UPI Number"
-              error={errors.accountDeatails?.gpay}
-              name="accountDeatails.gpay"
+              error={errors.accountDeatails?.upi}
+              name="accountDeatails.upi"
               notRequired
             />
           </div>

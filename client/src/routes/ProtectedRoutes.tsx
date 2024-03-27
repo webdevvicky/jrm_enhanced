@@ -41,6 +41,12 @@ import PoForm from "../components/PurchaseOrders/PoForm";
 import PoModel from "../components/PurchaseOrders/PoModel";
 import VoucherModel from "../components/Vouchers/VoucherModel";
 import Voucher from "../components/Vouchers/Voucher";
+import ProjectTimeline from "../components/Projects/ProjectTimeline";
+import NmrAttendanceForm from "../components/Attendance/NmrAttendanceForm";
+import WorkOrderForm from "../components/WorkOrder/WorkOrderForm";
+import WorkOrderModel from "../components/WorkOrder/WorkOrderModel";
+import WorkOrderList from "../components/WorkOrder/WorkOrderList";
+import ExecutionStatus from "../components/Execution/ExecutionStatus";
 
 const ProtectedRoutes = () => {
   const isAdmin = getUserRole() === "admin";
@@ -142,6 +148,27 @@ const ProtectedRoutes = () => {
               </Route>
 
               <Route path="status" element={<AccountsStatus />} />
+            </Route>
+          )}
+
+          {(allowedRoutes.includes("execution") || isAdmin) && (
+            <Route path="/execution">
+              <Route path="timeline" element={<ProjectTimeline />} />
+              <Route path="project" element={<ProjectInfo />} />
+
+              <Route path="nmr">
+                <Route path="new" element={<NmrAttendanceForm />} />
+                <Route path="edit/:id" element={<NmrAttendanceForm />} />
+              </Route>
+
+              <Route path="workorder">
+                <Route index element={<WorkOrderList />} />
+                <Route path="new" element={<WorkOrderForm />} />
+                <Route path="edit/:id" element={<WorkOrderForm />} />
+                <Route path="view/:id" element={<WorkOrderModel />} />
+              </Route>
+
+              <Route path="status" element={<ExecutionStatus />} />
             </Route>
           )}
 

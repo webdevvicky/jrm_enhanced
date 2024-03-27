@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
-import vendorService from "../../services/vendor/vendorService";
 import { AxiosResponse } from "axios";
 
 import Loader from "../Common/Loader/Loader";
@@ -15,7 +14,6 @@ import {
   Phone,
   Telephone,
   TelephoneForward,
-  TelephonePlus,
 } from "react-bootstrap-icons";
 import contractorService from "../../services/contractor/contractorService";
 

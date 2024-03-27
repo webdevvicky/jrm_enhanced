@@ -13,6 +13,7 @@ import { AxiosResponse } from "axios";
 import poVoucherService from "../../services/po/poVoucherService";
 import VoucherHistory from "./VoucherHistory";
 import { handleApiError } from "../../utils/apiUtils";
+import woVoucherService from "../../services/workOrder/woVoucherService";
 
 const Voucher = () => {
   const { state } = useLocation();
@@ -53,7 +54,15 @@ const Voucher = () => {
         });
     } else {
       if (selectedType === "workOrder") {
-        console.log("work order");
+        woVoucherService
+          .getById(state?._id || purchaseOrder)
+          .then((res: AxiosResponse) => {
+            setProjectId(res.data?.project);
+            setContractorId(res.data?.contractor);
+            setTotalAmount(res.data?.totalAmount);
+            console.log(res.data);
+            setVoucherData(res.data);
+          });
       }
     }
   }, [selectedType]);
@@ -81,6 +90,9 @@ const Voucher = () => {
   const vendorSelectData = useVendorSelectData();
   const contractorSelectData = useContractorSelectData();
 
+
+
+
   // form submission for new && eit
 
   const handleVoucherSubmit = (voucher: VoucherFormProps) => {
@@ -92,6 +104,7 @@ const Voucher = () => {
       return;
     }
 
+
     if (isEdit) {
       console.log(voucher.payableAmount);
       voucherService
@@ -100,13 +113,17 @@ const Voucher = () => {
           navigate(`/accounts/voucher/view/${res.data._id}`);
         })
         .catch((err: any) => handleApiError(err));
+
     } else {
+
       const commonVoucher = {
         ...voucher,
         type: selectedType,
       };
+
       let updatedVoucher = commonVoucher;
-      if (selectedType === "purchaseOrder") {
+      if (selectedType === restictedMode) {
+
         const lastVoucher =
           voucherData?.vouchers[voucherData.vouchers.length - 1];
         const lastBalanceAmount = lastVoucher ? lastVoucher.balanceAmount : 0;
@@ -115,6 +132,7 @@ const Voucher = () => {
           window.alert("Amount exceeded");
           return;
         }
+
         updatedVoucher = {
           ...commonVoucher,
           purchaseOrder: state._id || voucher.purchaseOrder,
@@ -123,6 +141,7 @@ const Voucher = () => {
           name: vendorId,
         };
       }
+
       if (selectedType === "workOrder") {
         updatedVoucher = {
           ...commonVoucher,
@@ -133,7 +152,9 @@ const Voucher = () => {
 
       voucherService
         .create(updatedVoucher)
-        .then((res: AxiosResponse) => navigate(`/accounts/voucher/view/${res.data._id}`))
+        .then((res: AxiosResponse) =>
+          navigate(`/accounts/voucher/view/${res.data._id}`)
+        )
         .catch((err: any) => handleApiError(err));
     }
   };
@@ -221,7 +242,7 @@ const Voucher = () => {
                     (contractor) => contractor.value == contractorId
                   )}
                   defaultValue={contractorId}
-                  isDisabled={restictedMode}
+                 // isDisabled={restictedMode}
                 />
               </div>
             )}
